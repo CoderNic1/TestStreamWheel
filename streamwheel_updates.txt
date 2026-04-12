@@ -1,0 +1,36 @@
+// comments not visible
+// # title
+// **bold**
+// * dot 
+// ++ new line ++
+
+++ new line ++
+ 
+# 🎡 V1.1 — introducing the landing page
+date: 12/04/2026
+ 
+**Preparing the platform for the future**
+ 
+* introduce landing page
+* add automatic update log and premium based on txt file (not hard coded)
+* preparing premium features
+* login system creation
+
+** bug fixes ** 
+* Optimizations
+ 
+++ new line ++
+ 
+# 🛠️ V1 Initial Release
+date: 10/04/2026
+ 
+StreamWheel is live!
+ 
+* Classic spin mode
+* Elimination mode
+* Countdown timer with pause/skip
+* Sound effects and background music
+* Ad/Sponsor banner
+* Dark Neon + Colorful themes
+* Game log with CSV export
+ 
