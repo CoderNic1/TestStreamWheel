@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact — StreamWheel</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0a0a14;
+  --surface:  #12121f;
+  --surface2: #1a1a2e;
+  --border:   rgba(124,58,237,0.35);
+  --text:     #f0eeff;
+  --text2:    #a78bfa;
+  --text3:    #6b5fa8;
+  --accent1:  #ff2d7b;
+  --accent2:  #f9c80e;
+  --accent3:  #00f5a0;
+  --accent4:  #00d4ff;
+  --accent5:  #ff6d00;
+  --accent6:  #c77dff;
+  --grad-main: linear-gradient(135deg,#ff2d7b 0%,#7c3aed 50%,#00d4ff 100%);
+  --radius:    20px;
+  --radius-sm: 12px;
+  --font-display: 'Fredoka One', cursive;
+  --font-body:    'Nunito', sans-serif;
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+html { font-size:16px; scroll-behavior:smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.bg-mesh {
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 50% at 10% 20%,rgba(255,45,123,0.05) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 90% 80%,rgba(0,212,255,0.05) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 40%,rgba(124,58,237,0.04) 0%,transparent 60%);
+}
+.bg-grid {
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(124,58,237,0.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(124,58,237,0.05) 1px,transparent 1px);
+  background-size:48px 48px;
+}
+
+.nav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 40px; height:64px;
+  background:rgba(10,10,20,0.8); backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo {
+  font-family:var(--font-display); font-size:1.5rem; color:#fff;
+  text-decoration:none; display:flex; align-items:center; gap:8px;
+  text-shadow:0 0 20px rgba(255,45,123,0.4);
+}
+.nav-logo-emoji { display:inline-block; animation:spin-slow 10s linear infinite; }
+@keyframes spin-slow { to { transform:rotate(360deg); } }
+.nav-back {
+  display:flex; align-items:center; gap:6px;
+  color:var(--text2); font-weight:800; font-size:0.85rem;
+  text-decoration:none; transition:color 0.2s;
+  padding:6px 14px; border-radius:20px;
+  border:1px solid var(--border); background:rgba(124,58,237,0.08);
+}
+.nav-back:hover { color:var(--accent6); border-color:var(--accent6); }
+
+.page-wrap {
+  position:relative; z-index:1;
+  max-width:860px; margin:0 auto;
+  padding:104px 24px 80px;
+}
+
+.page-header { margin-bottom:48px; animation:fade-up 0.5s ease both; }
+.page-eyebrow {
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:0.78rem; font-weight:800; color:var(--accent6);
+  background:rgba(124,58,237,0.12); border:1px solid rgba(124,58,237,0.3);
+  border-radius:20px; padding:4px 14px; margin-bottom:16px;
+  letter-spacing:0.5px; text-transform:uppercase;
+}
+.page-title {
+  font-family:var(--font-display);
+  font-size:clamp(2rem,5vw,3rem); color:#fff;
+  margin-bottom:12px; line-height:1.1;
+}
+.page-sub { font-size:1rem; color:var(--text2); font-weight:600; max-width:500px; line-height:1.6; }
+
+/* ---- About developer card ---- */
+.about-card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px 36px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  animation: fade-up 0.5s 0.05s ease both;
+}
+
+.about-avatar {
+  width: 90px; height: 90px; flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--grad-main);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.6rem;
+  box-shadow: 0 0 30px rgba(255,45,123,0.3), 0 0 60px rgba(124,58,237,0.2);
+  position: relative;
+}
+.about-avatar-online {
+  position:absolute; bottom:5px; right:5px;
+  width:16px; height:16px; border-radius:50%;
+  background:var(--accent3); border:2.5px solid var(--bg);
+}
+.about-info { flex:1; }
+.about-name {
+  font-family: var(--font-display);
+  font-size:1.7rem; color:#fff; margin-bottom:4px;
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+}
+.about-role-badge {
+  font-size:0.72rem; font-weight:800;
+  background:rgba(0,245,160,0.12); border:1px solid rgba(0,245,160,0.3);
+  color:var(--accent3); border-radius:14px; padding:3px 12px;
+  font-family:var(--font-body);
+}
+.about-tagline { font-size:0.95rem; color:var(--text2); font-weight:600; margin-bottom:14px; line-height:1.55; }
+.about-tags { display:flex; gap:8px; flex-wrap:wrap; }
+.about-tag {
+  font-size:0.76rem; font-weight:800; color:var(--text3);
+  background:rgba(255,255,255,0.04); border:1px solid var(--border);
+  border-radius:10px; padding:3px 12px;
+}
+
+/* ---- Contact cards ---- */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+  animation: fade-up 0.5s 0.1s ease both;
+}
+.contact-card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 22px;
+  transition: all 0.25s;
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+.contact-card::before {
+  content:''; position:absolute; inset:0;
+  background: var(--card-grad, rgba(124,58,237,0.05));
+  opacity:0; transition:opacity 0.25s;
+}
+.contact-card:hover { border-color:var(--card-color,var(--accent6)); transform:translateY(-3px); box-shadow:0 8px 30px rgba(0,0,0,0.3); }
+.contact-card:hover::before { opacity:1; }
+
+.contact-card-icon {
+  width:48px; height:48px; border-radius:var(--radius-sm);
+  background:var(--card-grad,linear-gradient(135deg,rgba(124,58,237,0.3),rgba(0,212,255,0.2)));
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.5rem; margin-bottom:14px;
+  box-shadow:0 0 20px var(--card-glow,rgba(124,58,237,0.2));
+}
+.contact-card-label {
+  font-size:0.72rem; font-weight:800; color:var(--text3);
+  text-transform:uppercase; letter-spacing:0.8px; margin-bottom:5px;
+}
+.contact-card-value {
+  font-family: var(--font-display); font-size:1rem; color:#fff;
+  margin-bottom:6px; word-break:break-all;
+}
+.contact-card-desc { font-size:0.8rem; font-weight:600; color:var(--text3); line-height:1.45; }
+.contact-card-arrow {
+  position:absolute; top:20px; right:20px;
+  font-size:0.85rem; color:var(--text3);
+  transition: transform 0.2s, color 0.2s;
+}
+.contact-card:hover .contact-card-arrow { transform:translate(3px,-3px); color:var(--card-color,var(--accent6)); }
+
+/* ---- FAQ / quick links ---- */
+.quick-section {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  margin-bottom: 20px;
+  animation: fade-up 0.5s 0.15s ease both;
+}
+.quick-section-title {
+  font-family:var(--font-display); font-size:1.1rem; color:#fff;
+  margin-bottom:18px; display:flex; align-items:center; gap:8px;
+}
+.faq-item { margin-bottom:18px; }
+.faq-item:last-child { margin-bottom:0; }
+.faq-q {
+  font-weight:800; color:var(--text); font-size:0.92rem;
+  margin-bottom:5px; display:flex; align-items:flex-start; gap:8px;
+}
+.faq-q::before { content:'Q'; color:var(--accent6); font-family:var(--font-display); font-size:0.85rem; flex-shrink:0; }
+.faq-a {
+  font-size:0.88rem; font-weight:600; color:var(--text2);
+  padding-left:22px; line-height:1.6;
+}
+.faq-a a { color:var(--accent4); text-decoration:none; font-weight:700; }
+.faq-a a:hover { text-decoration:underline; }
+
+/* ---- Response time banner ---- */
+.response-banner {
+  background:rgba(0,245,160,0.06); border:1px solid rgba(0,245,160,0.2);
+  border-radius:var(--radius-sm); padding:14px 18px;
+  display:flex; align-items:center; gap:12px;
+  font-size:0.88rem; font-weight:700; color:var(--accent3);
+  margin-bottom:28px; animation:fade-up 0.5s 0.08s ease both;
+}
+
+.footer {
+  position:relative; z-index:1;
+  border-top:1px solid var(--border);
+  padding:24px 40px;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:10px;
+  font-size:0.78rem; color:var(--text3); font-weight:600;
+}
+.footer-links { display:flex; gap:18px; }
+.footer-links a { color:var(--text3); text-decoration:none; transition:color 0.2s; }
+.footer-links a:hover { color:var(--accent6); }
+
+@keyframes fade-up {
+  from { opacity:0; transform:translateY(18px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-thumb { background:rgba(124,58,237,0.4); border-radius:4px; }
+
+@media (max-width:600px) {
+  .nav { padding:0 16px; }
+  .page-wrap { padding:90px 16px 60px; }
+  .about-card { flex-direction:column; align-items:center; text-align:center; padding:24px 20px; }
+  .about-tags { justify-content:center; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <span class="nav-logo-emoji">🎡</span> StreamWheel
+  </a>
+  <a href="index.html" class="nav-back">← Back to Home</a>
+</nav>
+
+<div class="page-wrap">
+
+  <div class="page-header">
+    <div class="page-eyebrow">💬 Get in Touch</div>
+    <h1 class="page-title">Contact &amp; About</h1>
+    <p class="page-sub">Built by a streamer, for streamers. Questions, feedback or collab ideas — reach out anytime using the contact cards below.</p>
+  </div>
+
+  <!-- Response time -->
+  <div class="response-banner">
+    <span style="font-size:1.2rem">⚡</span>
+
+    Typical response time: <strong style="margin:0 4px">within 3 days</strong> on weekdays.
+  </div>
+
+  <!-- ===== ABOUT DEVELOPER ===== -->
+  <div class="about-card">
+    <!--
+      ✏️ EDIT: Replace the emoji below with:
+        <img src="your-photo.jpg" alt="Developer" style="width:90px;height:90px;border-radius:50%;object-fit:cover;">
+      Put your photo in the same GitHub folder.
+    -->
+    <div class="about-avatar">
+      👾
+      <div class="about-avatar-online"></div>
+    </div>
+    <div class="about-info">
+      <div class="about-name">
+        NichoLoco
+        <span class="about-role-badge">Developer</span>
+      </div>
+      <p class="about-tagline">
+        Hobby developer passionated by building tools for people, &amp; next to this I like to stream on Xsee. I built StreamWheel because I want to bring some fun to your stream, its a fast and easy game with nice copetition elements to engage with your viewers. Wanted something fast, fun, and actually good-looking on stream. I work hard on avoiding any bugs or issues, if you do find them pls reach me out!
+      </p>
+      <div class="about-tags">
+        <span class="about-tag">🎮 Streaming</span>
+        <span class="about-tag">💻 Developing</span>
+        <span class="about-tag">🎡 StreamWheel</span>
+        <span class="about-tag">🔌 Xsee</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CONTACT CARDS ===== -->
+  <div class="contact-grid">
+
+    <!-- Email -->
+    <!-- ✏️ EDIT: Replace with your real email -->
+    <a href="mailto:nicholoco.moderator@gmail.com" class="contact-card"
+       style="--card-color:#00d4ff; --card-grad:linear-gradient(135deg,rgba(0,212,255,0.1),rgba(0,212,255,0.03)); --card-glow:rgba(0,212,255,0.2)">
+      <div class="contact-card-icon">📧</div>
+      <div class="contact-card-label">Email</div>
+      <div class="contact-card-value">nicholoco.moderator@gmail.com</div>
+      <div class="contact-card-desc">Best for bug reports, premium questions, or business inquiries.</div>
+      <span class="contact-card-arrow">↗</span>
+    </a>
+
+    <!-- Discord -->
+    <!-- ✏️ EDIT: Replace with your real Discord invite link -->
+    <a href="https://discord.gg/DhDzyC94mV" target="_blank" rel="noopener" class="contact-card"
+       style="--card-color:#c77dff; --card-grad:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(124,58,237,0.04)); --card-glow:rgba(124,58,237,0.25)">
+      <div class="contact-card-icon">🎮</div>
+      <div class="contact-card-label">Discord Server</div>
+      <div class="contact-card-value">Join us today!</div>
+      <div class="contact-card-desc">Join the community! Get support, share feedback, join our affiliate program, and chat with other streamers.</div>
+      <span class="contact-card-arrow">↗</span>
+    </a>
+
+    <!-- Twitter/X -->
+    <a href="https://x.com/YOURHANDLE" target="_blank" rel="noopener" class="contact-card"
+       style="--card-color:#f0eeff; --card-grad:linear-gradient(135deg,rgba(240,238,255,0.07),rgba(240,238,255,0.02)); --card-glow:rgba(240,238,255,0.1)">
+      <div class="contact-card-icon" style="font-size:1.3rem;font-family:monospace;font-weight:900">𝕏</div>
+      <div class="contact-card-label">Twitter / X</div>
+      <!-- ✏️ EDIT: Your handle -->
+      <div class="contact-card-value">UNDER DEVELOPMENT</div>
+      <div class="contact-card-desc">Follow for StreamWheel updates, tips, and stream highlights.</div>
+      <span class="contact-card-arrow">↗</span>
+    </a>
+-->
+    <!-- GitHub -->
+    <a href="https://github.com/CoderNic1/TestStreamWheel" target="_blank" rel="noopener" class="contact-card"
+       style="--card-color:#00f5a0; --card-grad:linear-gradient(135deg,rgba(0,245,160,0.08),rgba(0,245,160,0.02)); --card-glow:rgba(0,245,160,0.15)">
+      <div class="contact-card-icon">🐙</div>
+      <div class="contact-card-label">GitHub</div>
+      <div class="contact-card-value">CoderNic1</div>
+      <div class="contact-card-desc">star the repo if you like StreamWheel!</div>
+      <span class="contact-card-arrow">↗</span>
+    </a>
+
+  </div>
+
+  <!-- ===== FAQ ===== -->
+  <div class="quick-section">
+    <div class="quick-section-title">❓ Frequently Asked Questions</div>
+
+    <!-- ✏️ EDIT: Add/remove/rewrite FAQ items to match your actual situation -->
+    <div class="faq-item">
+      <div class="faq-q">Is StreamWheel free to use?</div>
+      <div class="faq-a">Yes! The core app — Classic &amp; Elimination modes are free to use, although in the future we might bring in premium functions to cover the costs. <a href="index.html">Check the Premium page</a> for advanced features.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">My data disappeared — what happened?</div>
+      <div class="faq-a">A lot of basic data is stored in your local browser, this means changing from device or browser will not carry over this data, we do this to keep the costs for running a database as log as possible. In the future we plan to bring more data into a database to allow streamers to use streamwheel from any place at any time.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Can I suggest a feature?</div>
+      <div class="faq-a">Absolutely! Post it in our <a href="https://discord.gg/DhDzyC94mV">Discord server</a> under #feature-requests, or email <a href="nicholoco.moderator@gmail.com">here</a>. I read everything.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">When is the Xsee API integration coming?</div>
+      <div class="faq-a">For now we are waiting on the Xsee team to have the developed API available and intagrate it in our platform. <a href="index.html">Update Log</a>.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">I found a bug — how do I report it?</div>
+      <div class="faq-a">Email <a href="mailto:nicholoco.moderator@gmail.com">here</a> with "BUG:" in the subject. Please include your browser and what you were doing when it happened.</div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div style="font-family:var(--font-display);font-size:1rem;color:var(--text2)">🎡 StreamWheel</div>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <div>© 2026 StreamWheel</div>
+</footer>
+
+</body>
+</html>
