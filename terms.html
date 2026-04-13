@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service — StreamWheel</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0a0a14;
+  --surface:  #12121f;
+  --surface2: #1a1a2e;
+  --border:   rgba(124,58,237,0.35);
+  --text:     #f0eeff;
+  --text2:    #a78bfa;
+  --text3:    #6b5fa8;
+  --accent1:  #ff2d7b;
+  --accent3:  #00f5a0;
+  --accent4:  #00d4ff;
+  --accent6:  #c77dff;
+  --grad-main: linear-gradient(135deg,#ff2d7b 0%,#7c3aed 50%,#00d4ff 100%);
+  --radius:    20px;
+  --radius-sm: 12px;
+  --font-display: 'Fredoka One', cursive;
+  --font-body:    'Nunito', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.7;
+}
+
+.bg-mesh {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 50% at 10% 20%,rgba(255,45,123,0.05) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 90% 80%,rgba(0,212,255,0.05) 0%,transparent 60%);
+}
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(124,58,237,0.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(124,58,237,0.05) 1px,transparent 1px);
+  background-size: 48px 48px;
+}
+
+.nav {
+  position: fixed; top:0; left:0; right:0; z-index:100;
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 0 40px; height: 64px;
+  background: rgba(10,10,20,0.8);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: var(--font-display); font-size: 1.5rem; color: #fff;
+  text-decoration: none; display: flex; align-items: center; gap: 8px;
+  text-shadow: 0 0 20px rgba(255,45,123,0.4);
+}
+.nav-logo-emoji { display:inline-block; animation: spin-slow 10s linear infinite; }
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+.nav-back {
+  display:flex; align-items:center; gap:6px;
+  color: var(--text2); font-weight:800; font-size:0.85rem;
+  text-decoration:none; transition:color 0.2s;
+  padding: 6px 14px; border-radius:20px;
+  border: 1px solid var(--border);
+  background: rgba(124,58,237,0.08);
+}
+.nav-back:hover { color: var(--accent6); border-color: var(--accent6); }
+
+.page-wrap {
+  position:relative; z-index:1;
+  max-width:780px; margin:0 auto;
+  padding: 104px 24px 80px;
+}
+
+.page-header { margin-bottom:48px; animation: fade-up 0.5s ease both; }
+.page-eyebrow {
+  display:inline-flex; align-items:center; gap:7px;
+  font-size:0.78rem; font-weight:800; color: var(--accent6);
+  background: rgba(124,58,237,0.12);
+  border: 1px solid rgba(124,58,237,0.3);
+  border-radius:20px; padding:4px 14px;
+  margin-bottom:16px;
+  letter-spacing:0.5px; text-transform:uppercase;
+}
+.page-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem,5vw,3rem);
+  color:#fff; margin-bottom:14px; line-height:1.1;
+}
+.page-meta {
+  font-size:0.82rem; color:var(--text3); font-weight:600;
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+}
+
+.doc-body { animation: fade-up 0.5s 0.1s ease both; }
+
+.doc-section {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 32px; margin-bottom:20px;
+  transition: border-color 0.2s;
+}
+.doc-section:hover { border-color: rgba(124,58,237,0.55); }
+.doc-section-title {
+  font-family: var(--font-display);
+  font-size:1.15rem; color:#fff; margin-bottom:14px;
+  display:flex; align-items:center; gap:10px;
+  padding-bottom:10px; border-bottom:1px solid var(--border);
+}
+.doc-section-number {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:26px; height:26px; border-radius:50%;
+  background: var(--grad-main);
+  font-size:0.75rem; font-weight:900; color:#fff; flex-shrink:0;
+}
+.doc-text {
+  color: var(--text2); font-size:0.92rem; font-weight:600; line-height:1.75;
+}
+.doc-text p { margin-bottom:10px; }
+.doc-text p:last-child { margin-bottom:0; }
+.doc-text ul { padding-left:20px; margin:8px 0 10px; }
+.doc-text ul li { margin-bottom:5px; }
+.doc-text strong { color: var(--text); font-weight:800; }
+.doc-text a { color: var(--accent4); text-decoration:none; font-weight:700; }
+.doc-text a:hover { text-decoration:underline; }
+
+/* Warning callout (red) */
+.doc-callout {
+  border-radius: var(--radius-sm);
+  padding:14px 18px; margin:12px 0;
+  font-size:0.86rem; font-weight:700;
+  display:flex; align-items:flex-start; gap:10px;
+}
+.doc-callout.info { background:rgba(0,212,255,0.06); border:1px solid rgba(0,212,255,0.2); color:var(--accent4); }
+.doc-callout.warn { background:rgba(255,109,0,0.07); border:1px solid rgba(255,109,0,0.25); color:#ff9a4d; }
+.doc-callout.danger { background:rgba(255,45,123,0.07); border:1px solid rgba(255,45,123,0.25); color:#ff6699; }
+.doc-callout-icon { font-size:1.1rem; flex-shrink:0; margin-top:1px; }
+
+.doc-contact-strip {
+  background: rgba(124,58,237,0.08);
+  border: 1px solid rgba(124,58,237,0.3);
+  border-radius: var(--radius);
+  padding:24px 28px; margin-top:32px;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:14px;
+}
+.doc-contact-strip-text { font-weight:700; color:var(--text2); font-size:0.9rem; }
+.doc-contact-strip-text strong { color:#fff; display:block; font-size:1rem; margin-bottom:3px; }
+.btn-contact {
+  padding:10px 24px; border-radius:24px;
+  background: var(--grad-main); color:#fff;
+  border:none; font-family:var(--font-body);
+  font-weight:800; font-size:0.88rem; cursor:pointer;
+  text-decoration:none; display:inline-flex; align-items:center; gap:6px;
+  transition:all 0.2s; box-shadow:0 0 20px rgba(255,45,123,0.2);
+}
+.btn-contact:hover { transform:translateY(-2px); box-shadow:0 0 30px rgba(255,45,123,0.4); }
+
+.footer {
+  position:relative; z-index:1;
+  border-top:1px solid var(--border);
+  padding:24px 40px;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:10px;
+  font-size:0.78rem; color:var(--text3); font-weight:600;
+}
+.footer-links { display:flex; gap:18px; }
+.footer-links a { color:var(--text3); text-decoration:none; transition:color 0.2s; }
+.footer-links a:hover { color:var(--accent6); }
+
+@keyframes fade-up {
+  from { opacity:0; transform:translateY(18px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-thumb { background:rgba(124,58,237,0.4); border-radius:4px; }
+
+@media (max-width:600px) {
+  .nav { padding:0 16px; }
+  .page-wrap { padding:90px 16px 60px; }
+  .doc-section { padding:20px 18px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <span class="nav-logo-emoji">🎡</span> StreamWheel
+  </a>
+  <a href="index.html" class="nav-back">← Back to Home</a>
+</nav>
+
+<div class="page-wrap">
+
+  <div class="page-header">
+    <div class="page-eyebrow">📜 Legal</div>
+    <h1 class="page-title">Terms of Service</h1>
+    <div class="page-meta">
+      <!-- ✏️ EDIT: Update date when you change this document -->
+      <span>📅 Last updated: April 12, 2026</span>
+      <span>🎡 StreamWheel</span>
+    </div>
+  </div>
+
+  <div class="doc-body">
+
+    <!-- Intro -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <span class="doc-section-number">👋</span>
+        Agreement to Terms
+      </div>
+      <div class="doc-text">
+        <!-- ✏️ EDIT: Adjust service description to match what StreamWheel actually does -->
+        <p>These Terms of Service ("Terms") govern your access to and use of <strong>StreamWheel</strong>, a streamer giveaway wheel tool operated by StreamWheel ("we", "us", "our").</p>
+        <p>By accessing or using StreamWheel, you agree to be bound by these Terms. If you disagree with any part, you may not use our service.</p>
+        <div class="doc-callout info">
+          <span class="doc-callout-icon">ℹ️</span>
+          These Terms apply to all users — free and premium — of the StreamWheel website and app.
+        </div>
+      </div>
+    </div>
+
+    <!-- Accounts -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <span class="doc-section-number">1</span>
+        Accounts &amp; Registration
+      </div>
+      <div class="doc-text">
+        <!-- ✏️ EDIT: Adjust age requirement if needed -->
+        <p>You must be at least <strong>13 years old</strong> to create an account. By registering, you confirm you meet this requirement.</p>
+        <p>You are responsible for:</p>
+        <ul>
+          <li>Providing accurate and up-to-date account information</li>
+          <li>Maintaining the security of your password and account</li>
+          <li>All activity that occurs under your account</li>
+        </ul>
+        <p>Notify us immediately at <a href="mailto:your@email.com">your@email.com</a> if you suspect unauthorized access to your account.</p>
+      </div>
+    </div>
+
+    <!-- Use of Service -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <span class="doc-section-number">2</span>
+        Acceptable Use
+      </div>
+      <div class="doc-text">
+        <p>StreamWheel is a tool for running fair giveaways and games during live streams. You agree to use it only for lawful purposes.</p>
+        <p><strong>You must not:</strong></p>
+        <ul>
+          <!-- ✏️ EDIT: Add/remove restrictions relevant to your platform -->
+          <li>Use StreamWheel to run fraudulent, rigged, or deceptive giveaways</li>
+          <li>Attempt to reverse-engineer, hack, or exploit the service</li>
+          <li>Scrape, harvest, or otherwise collect data from other users</li>
+          <li>Use automated bots to abuse the service or inflate entries</li>
+          <li>Violate any applicable laws, regulations, or third-party platform rules (e.g. Twitch, Discord terms)</li>
+          <li>Use the service in a way that could harm, disable, or impair our infrastructure</li>
+        </ul>
+        <div class="doc-callout warn">
+          <span class="doc-callout-icon">⚠️</span>
+          Violation of these rules may result in immediate suspension or permanent ban without refund.
+        </div>
+      </div>
+    </div>
+
+    <!-- Giveaways responsibility -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <span class="doc-section-number">3</span>
+        Giveaway Responsibility
+      </div>
+      <div class="doc-text">
+        <!-- ✏️ EDIT: This section protects you legally — keep it -->
+        <p>StreamWheel provides the <strong>tooling</strong> for giveaways. You, as the streamer, are entirely responsible for:</p>
+        <ul>
+          <li>The prizes you offer and fulfilling them to winners</li>
+          <li>Ensuring your giveaways comply with your country's laws and platform terms</li>
+          <li>Any tax or legal obligations related to prizes</li>
+          <li>The participants you invite and any disputes that arise</li>
+        </ul>
+        <p>StreamWheel is not a party to any giveaway and accepts no liability for prizes, disputes, or outcomes.</p>
+      </div>
+    </div>
+
+    <!-- Premium / Payment -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <span class="doc-section-number">4</span>
+        Premium Subscriptions &amp; Payments
+      </div>
+      <div class="doc-text">
+        <!-- ✏️ EDIT: Adjust pricing and refund policy to match what you decide -->
+        <p>Some features require a paid <strong>Premium</strong> subscription. By subscribing you agree to:</p>
+        <ul>
+          <li>Pay the applicable subscription fee on a recurring basis</li>
+          <li>Provide valid payment information processed by our third-party payment provider</li>
+          <li>Your subscription auto-renews unless cancelled before the renewal date</li>
+        </ul>
+        <p><strong>Refunds:</strong> We offer a <strong>7-day refund</strong> on new subscriptions if you are unsatisfied. After 7 days, charges are non-refundable. Contact us to request a refund.</p>
+        <div class="doc-callout info">
+          <span class="doc-callout-icon">💳</span>
+          We do not store your payment card details. All payments are processed securely by our payment partner.
+        </div>
+      </div>
+    </div>
+
+    <!-- Intellectual Property -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <span class="doc-section-number">5</span>
+        Intellectual Property
+      </div>
+      <div class="doc-text">
+        <!-- ✏️ EDIT: Adjust if you allow forks / open-source -->
+        <p>The StreamWheel service, including its code, design, logo, and branding, is owned by StreamWheel and protected by intellectual property laws.</p>
+        <p>You may <strong>not</strong> copy, reproduce, distribute, or create derivative works from StreamWheel without explicit written permission.</p>
+        <p>Content you create using StreamWheel (e.g. your winner history, your leaderboard data) remains yours. You grant us a limited license to store and display it as part of providing the service.</p>
+      </div>
+    </div>
+
+    <!-- Disclaimers -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <span class="doc-section-number">6</span>
+        Disclaimers &amp; Limitation of Liability
+      </div>
+      <div class="doc-text">
+        <p>StreamWheel is provided <strong>"as is"</strong> without warranties of any kind. We do not guarantee that:</p>
+        <ul>
+          <li>The service will be uninterrupted or error-free</li>
+          <li>Results from the wheel are legally recognized as fair draws in all jurisdictions</li>
+          <li>Data stored locally will not be lost due to browser clearing or device failure</li>
+        </ul>
+        <!-- ✏️ EDIT: Adjust liability cap to match your jurisdiction -->
+        <p>To the maximum extent permitted by law, StreamWheel's total liability to you shall not exceed the amount you paid us in the <strong>3 months</strong> prior to the claim.</p>
+        <div class="doc-callout danger">
+          <span class="doc-callout-icon">⚠️</span>
+          We are not liable for lost prizes, missed winners, technical failures, or any indirect damages arising from use of StreamWheel.
+        </div>
+      </div>
+    </div>
+
+    <!-- Termination -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <span class="doc-section-number">7</span>
+        Termination
+      </div>
+      <div class="doc-text">
+        <p>We reserve the right to suspend or terminate your access at any time for violations of these Terms, without prior notice.</p>
+        <p>You may delete your account at any time by contacting us. Upon termination, your right to use the service ends immediately. Cloud-stored data will be deleted within 30 days.</p>
+      </div>
+    </div>
+
+    <!-- Governing Law -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <span class="doc-section-number">8</span>
+        Governing Law
+      </div>
+      <div class="doc-text">
+        <!-- ✏️ EDIT: Replace with your actual country/region -->
+        <p>These Terms are governed by the laws of <strong>[Your Country / Region]</strong>. Any disputes arising shall be resolved in the courts of that jurisdiction.</p>
+        <p>If any provision of these Terms is found to be unenforceable, the remaining provisions will continue in full force.</p>
+      </div>
+    </div>
+
+    <!-- Changes -->
+    <div class="doc-section">
+      <div class="doc-section-title">
+        <span class="doc-section-number">9</span>
+        Changes to These Terms
+      </div>
+      <div class="doc-text">
+        <p>We may update these Terms from time to time. We will notify you of significant changes via the in-app Update Log or by email. Continued use after changes constitutes acceptance.</p>
+        <p>Always check the date at the top of this page for the latest revision.</p>
+      </div>
+    </div>
+
+    <!-- Contact strip -->
+    <div class="doc-contact-strip">
+      <div class="doc-contact-strip-text">
+        <strong>Questions about these Terms?</strong>
+        We're happy to clarify anything.
+      </div>
+      <a href="contact.html" class="btn-contact">📧 Contact Us</a>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer">
+  <div style="font-family:var(--font-display);font-size:1rem;color:var(--text2)">🎡 StreamWheel</div>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="contact.html">Contact</a>
+  </div>
+  <!-- ✏️ EDIT: Update year -->
+  <div>© 2026 StreamWheel</div>
+</footer>
+
+</body>
+</html>

@@ -15,6 +15,7 @@ date: 12/04/2026
 * add automatic update log and premium based on txt file (not hard coded)
 * preparing premium features
 * login system creation
+* adding the contact, privacy and terms page
 
 ** bug fixes ** 
 * Optimizations
