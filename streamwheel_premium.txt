@@ -4,28 +4,34 @@
 //   $ price              = price displayed at top (e.g. $ 4.99/mo or $ 49/yr)
 //   * Feature text       = gold feature bullet point
 //   comment: text        = visible italic note / section label
+
+
+// * 🔌 Xsee Space API — auto-fetch all live participants directly into your wheel
+// * 🔔 Stream overlay alerts — animated winner announcements on screen
+// * 🤖 Discord bot — automatically post winners to your Discord server
+// * 🌐 Public results page — shareable link to your winner history
+// * 📱 Mobile companion app — run your wheel from your phone while streaming
+// * 🎯 Weighted entries — give certain users higher win chances
+// * 🎁 Extra theme packs — 5 additional visual themes
+// * 🔊 Sound effect packs — custom spin and win sounds
+
+$ ⭐ 3.99/month ⭐
  
-$ 4.99/mo
- 
-comment: Everything in the free version, plus: (WIP placeholders)
- 
-* 🔌 Xsee Space API — auto-fetch all live participants directly into your wheel
-* 🗄️ Cloud winner storage — every result synced to your personal dashboard
+comment: Everything in the free version, plus:
+
+* 🗄️ Leaderboard saved on database instead of local
 * 🎨 Custom wheel colors — brand your wheel with your stream colors
 * 🖼️ Custom center logo — replace the 🎡 with your own image
 * 📢 Remove "Powered by StreamWheel" branding
-* 📊 Winner analytics — see who wins most, frequency charts, prize history
+* 📱 Set a personal ad that viewers will see during the stream using StreamWheel
+comment: Subscription note
+* No refunds possible
+* all subscriptions runs using the subscription page on Xsee
+* You can subscribe on [link to my profile to subscribe]
+* The features can be changed at anytime without prior notice
+* subscribing on a tier 1 or higher makes you eligble for premium, you can pay a higher tier fee but won't receive additional features (for now)
  
-comment: Coming soon to Premium:
+
  
-* 🔔 Stream overlay alerts — animated winner announcements on screen
-* 🤖 Discord bot — automatically post winners to your Discord server
-* 🌐 Public results page — shareable link to your winner history
-* 📱 Mobile companion app — run your wheel from your phone while streaming
-* 🎯 Weighted entries — give certain users higher win chances
- 
-comment: One-time purchases (add-ons):
- 
-* 🎁 Extra theme packs — 5 additional visual themes
-* 🔊 Sound effect packs — custom spin and win sounds
+
  
