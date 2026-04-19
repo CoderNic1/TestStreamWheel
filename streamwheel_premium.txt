@@ -27,9 +27,10 @@ comment: Everything in the free version, plus:
 comment: Subscription note
 * No refunds possible
 * all subscriptions runs using the subscription page on Xsee
-* You can subscribe on [link to my profile to subscribe]
+* You can subscribe on https://xsee.tv/iwatchyou
 * The features can be changed at anytime without prior notice
 * subscribing on a tier 1 or higher makes you eligble for premium, you can pay a higher tier fee but won't receive additional features (for now)
+* Don't have an Xsee profile yet? Sign up using our referal link and enjoy exclusive benefits in our discord server https://xsee.tv/?ref=CD292248.
  
 
  
