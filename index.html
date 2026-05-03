@@ -784,6 +784,17 @@ body {
   background-size: 48px 48px;
 }
 
+/* ===== ERROR BANNER ===== */
+.sw-error-banner {
+  position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%);
+  background: #ff2d2d; color: #fff; border-radius: 12px;
+  padding: 10px 20px 10px 14px; font-weight: 800; font-size: 0.82rem;
+  box-shadow: 0 4px 24px rgba(255,45,45,0.35); z-index: 9999;
+  display: flex; align-items: center; gap: 10px; max-width: 90vw;
+  animation: toast-in 0.3s ease;
+}
+.sw-error-banner button { background: rgba(255,255,255,0.25); border: none; border-radius: 8px; color: #fff; font-weight: 800; font-size: 0.8rem; padding: 3px 10px; cursor: pointer; }
+
 /* ===== NAV ===== */
 .nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
@@ -1448,6 +1459,54 @@ body {
     </div>
   </div>
 
+  <!-- ONBOARDING GUIDE (hidden after first confirmed setup) -->
+  <div id="onboardingGuide" style="background:linear-gradient(135deg,rgba(77,150,255,0.1),rgba(107,203,119,0.08));border:1.5px solid var(--accent4);border-radius:var(--radius);padding:14px 18px;flex-shrink:0;margin-bottom:0">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <span style="font-family:var(--font-display);font-size:1rem;color:var(--accent4)">👋 Welcome to StreamWheel!</span>
+      <button type="button" onclick="dismissOnboarding()" style="background:none;border:none;color:var(--text2);font-size:0.78rem;font-weight:700;cursor:pointer;opacity:0.7">✕ Dismiss</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px">
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <span style="font-size:1.2rem;flex-shrink:0">1️⃣</span>
+        <div><div style="font-weight:800;font-size:0.82rem;color:var(--text)">Set up your game</div><div style="font-size:0.74rem;color:var(--text2);font-weight:600">Enter a prize name, pick Classic or Elimination mode, set winner count, then hit Done.</div></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <span style="font-size:1.2rem;flex-shrink:0">2️⃣</span>
+        <div><div style="font-weight:800;font-size:0.82rem;color:var(--text)">Add entries</div><div style="font-size:0.74rem;color:var(--text2);font-weight:600">Type one name per line, or use ⚡ Fill for a quick demo. Add a countdown timer for viewer join time.</div></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <span style="font-size:1.2rem;flex-shrink:0">3️⃣</span>
+        <div><div style="font-weight:800;font-size:0.82rem;color:var(--text)">Start &amp; spin</div><div style="font-size:0.74rem;color:var(--text2);font-weight:600">Hit 🚀 Start Game, then press SPIN (or Space) to spin the wheel and pick a winner!</div></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-start">
+        <span style="font-size:1.2rem;flex-shrink:0">4️⃣</span>
+        <div><div style="font-weight:800;font-size:0.82rem;color:var(--text)">Track &amp; repeat</div><div style="font-size:0.74rem;color:var(--text2);font-weight:600">Winners are saved to the Log &amp; Leaderboard. Use Auto-Cycle in Settings to loop games automatically.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CYCLE LIVE BANNER (hidden until cycle is running) -->
+  <div id="cycleLiveBanner" style="display:none;background:linear-gradient(135deg,rgba(199,125,255,0.18),rgba(77,150,255,0.14));border:2px solid var(--accent6);border-radius:var(--radius);padding:10px 16px;flex-shrink:0;margin-bottom:0">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span id="cycleLiveDot" style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--accent6);animation:pulse 1.2s ease-in-out infinite;flex-shrink:0"></span>
+        <span style="font-family:var(--font-display);font-size:0.95rem;color:var(--accent6)">🔁 Auto-Cycle Active</span>
+        <span id="cycleLiveLoopBadge" style="background:rgba(199,125,255,0.25);border:1px solid var(--accent6);border-radius:12px;padding:2px 10px;font-size:0.72rem;font-weight:800;color:var(--accent6)"></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span id="cycleLiveStatus" style="font-size:0.78rem;font-weight:700;color:var(--text2)"></span>
+        <div id="cycleWaitBarWrap" style="display:none;align-items:center;gap:6px">
+          <div style="width:100px;height:6px;border-radius:4px;background:var(--bg2);overflow:hidden">
+            <div id="cycleWaitBar" style="height:100%;background:linear-gradient(90deg,var(--accent6),var(--accent4));border-radius:4px;transition:width 1s linear;width:100%"></div>
+          </div>
+          <span id="cycleWaitCountdown" style="font-size:0.75rem;font-weight:800;color:var(--accent6);min-width:36px"></span>
+        </div>
+        <button type="button" class="btn btn-danger btn-xs" onclick="stopAutoCycle()">⏹ Stop</button>
+        <button type="button" class="btn btn-secondary btn-xs" id="cyclePauseWaitBtn" onclick="cyclePauseWait()" style="display:none">⏸ Pause wait</button>
+      </div>
+    </div>
+  </div>
+
   <!-- PHASE 2 GRID -->
   <div id="gamePhase2" class="game-grid" style="display:none">
 
@@ -1457,6 +1516,7 @@ body {
         <div class="panel-title panel-title-sm" style="justify-content:space-between;margin-bottom:6px">
           <span>👥 Entries <span id="entryCountBadge" class="badge-count">0</span></span>
           <div style="display:flex;gap:4px">
+            <button class="btn btn-secondary btn-xs" onclick="quickFillEntries()" title="Quick Fill 10 demo names">⚡ Fill</button>
             <button class="btn btn-secondary btn-xs" onclick="shuffleEntries()" title="Shuffle">🔀</button>
             <button class="btn btn-secondary btn-xs" onclick="clearEntries()" title="Clear all">🗑️</button>
           </div>
@@ -1477,6 +1537,8 @@ body {
           ⚠️ Max entries reached!
           <button class="btn btn-primary btn-xs" style="margin-left:6px" onclick="startGame()">🚀 Start Early!</button>
         </div>
+
+        <div id="duplicateWarning" style="display:none;background:rgba(255,146,43,0.12);border:1.5px solid var(--accent5);border-radius:8px;padding:6px 10px;font-size:0.76rem;font-weight:700;color:var(--accent5);margin-bottom:6px"></div>
 
         <div class="entries-box-wrap">
           <textarea class="form-textarea" id="entriesBox" placeholder="One name per line&#10;&#10;Alice&#10;Bob&#10;Charlie" oninput="onEntriesInput()"></textarea>
@@ -1502,7 +1564,6 @@ body {
       <div class="wheel-wrap" id="wheelWrap">
         <canvas id="wheelCanvas" width="380" height="380" class="wheel-canvas" style="width:100%;height:100%;display:block"></canvas>
         <div class="wheel-pointer"></div>
-        <div class="wheel-center-circle">🎡</div>
         <div class="countdown-wrap" id="countdownWrap">
           <div class="countdown-label">
             <span>⏳ Countdown…</span>
@@ -1655,119 +1716,93 @@ body {
         </div>
       </div>
 
-      <!-- Session -->
+      <!-- Wheel Center Logo + Wheel Size (combined) -->
       <div class="panel" style="margin-bottom:16px">
-        <div class="panel-title">🚪 Session</div>
-        <p style="font-size:0.8rem;color:var(--text2);font-weight:600;margin-bottom:10px">Return to the welcome screen. Your wheel and leaderboard data stay in this browser until you clear site data.</p>
-        <button type="button" class="btn btn-secondary btn-sm" onclick="swlLogoutToLanding()">Log out</button>
-      </div>
-
-      <!-- Wheel size -->
-      <div class="panel" style="margin-bottom:16px">
-        <div class="panel-title">🎡 Wheel Size</div>
-        <p style="font-size:0.8rem;color:var(--text2);font-weight:600;margin-bottom:8px">Larger wheels look great on stream — scroll down if it overflows the screen.</p>
-        <div style="display:flex;align-items:center;gap:10px">
-          <input type="range" id="wheelSizeSlider" min="240" max="560" step="10" value="380" style="flex:1;accent-color:var(--accent1)">
-          <span id="wheelSizeLabel" style="font-weight:800;min-width:50px">380px</span>
+        <div class="panel-title">🎡 Wheel Appearance</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start">
+          <div>
+            <div style="font-size:0.78rem;font-weight:800;color:var(--text2);margin-bottom:6px">🖼️ Center Logo <span style="font-size:0.65rem;font-weight:600;opacity:0.8">(free premium)</span></div>
+            <label class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;margin-bottom:6px">
+              📤 Upload
+              <input type="file" id="wheelLogoInput" accept="image/*" style="display:none" onchange="handleWheelLogoUpload(this)">
+            </label>
+            <div id="wheelLogoPreviewWrap" style="display:none;align-items:center;gap:8px;flex-wrap:wrap">
+              <img id="wheelLogoPreview" src="" alt="Logo" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--border)">
+              <button type="button" class="btn btn-danger btn-xs" onclick="removeWheelLogo()">✕</button>
+            </div>
+            <div style="margin-top:8px">
+              <div style="font-size:0.72rem;font-weight:800;color:var(--text2);margin-bottom:4px">⭕ Center Size</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap">
+                <button type="button" class="btn btn-secondary btn-xs center-size-btn active" data-size="s" onclick="setWheelCenterSize('s')">S</button>
+                <button type="button" class="btn btn-secondary btn-xs center-size-btn" data-size="m" onclick="setWheelCenterSize('m')">M</button>
+                <button type="button" class="btn btn-secondary btn-xs center-size-btn" data-size="l" onclick="setWheelCenterSize('l')">L</button>
+                <button type="button" class="btn btn-secondary btn-xs center-size-btn" data-size="xl" onclick="setWheelCenterSize('xl')">XL</button>
+              </div>
+              <div style="font-size:0.68rem;color:var(--text2);font-weight:600;margin-top:3px">Outer ring stays unchanged</div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:0.78rem;font-weight:800;color:var(--text2);margin-bottom:6px">📐 Wheel Size</div>
+            <input type="range" id="wheelSizeSlider" min="240" max="560" step="10" value="380" style="width:100%;accent-color:var(--accent1);margin-bottom:4px">
+            <span id="wheelSizeLabel" style="font-weight:800;font-size:0.8rem">380px</span>
+          </div>
         </div>
       </div>
 
-      <!-- Spin shortcut & button visibility -->
+      <!-- Spin Control -->
       <div class="panel" style="margin-bottom:16px">
-        <div class="panel-title">🎯 Spin control</div>
-        <p style="font-size:0.8rem;color:var(--text2);font-weight:600;margin-bottom:10px">Keyboard shortcut to spin (ignored while typing in a field). Hide the button for a cleaner OBS overlay and use only the shortcut if you prefer.</p>
-        <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:0.85rem;margin-bottom:10px;cursor:pointer">
+        <div class="panel-title">🎯 Spin Control</div>
+        <p style="font-size:0.8rem;color:var(--text2);font-weight:600;margin-bottom:10px">Keyboard shortcut &amp; SPIN button visibility.</p>
+        <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:0.85rem;margin-bottom:8px;cursor:pointer">
           <input type="checkbox" id="spinShortcutEnabled" checked style="width:16px;height:16px;accent-color:var(--accent1)">
-          Enable spin keyboard shortcut
+          Enable keyboard shortcut
         </label>
-        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px">
           <span style="font-size:0.8rem;font-weight:700;color:var(--text2)">Key:</span>
-          <kbd id="spinShortcutKbd" style="background:var(--surface2);border:1.5px solid var(--border);padding:6px 12px;border-radius:8px;font-family:ui-monospace,monospace;font-weight:800">Space</kbd>
-          <button type="button" class="btn btn-secondary btn-sm" id="spinShortcutLearnBtn">✏️ Change key…</button>
+          <kbd id="spinShortcutKbd" style="background:var(--surface2);border:1.5px solid var(--border);padding:4px 10px;border-radius:8px;font-family:ui-monospace,monospace;font-weight:800;font-size:0.82rem">Space</kbd>
+          <button type="button" class="btn btn-secondary btn-sm" id="spinShortcutLearnBtn">✏️ Change…</button>
         </div>
         <p id="spinShortcutListenHint" style="display:none;font-size:0.78rem;font-weight:700;color:var(--accent1);margin-bottom:8px">Press a key now (Esc to cancel)…</p>
-        <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:0.85rem;cursor:pointer">
+        <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:0.85rem;cursor:pointer;margin-bottom:10px">
           <input type="checkbox" id="spinBtnVisible" checked style="width:16px;height:16px;accent-color:var(--accent1)">
           Show SPIN button
         </label>
-        <button type="button" class="btn btn-primary btn-sm" style="margin-top:10px" onclick="saveSpinControlSettings()">💾 Save spin controls</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="saveSpinControlSettings()">💾 Save</button>
       </div>
 
-      <!-- Right column widgets (game screen) -->
+      <!-- Right column widgets (game screen) + Elim delay (combined) -->
       <div class="panel" style="margin-bottom:16px">
-        <div class="panel-title">📌 Right column widgets</div>
-        <p style="font-size:0.8rem;color:var(--text2);font-weight:600;margin-bottom:10px">Show or hide panels beside the wheel on the <strong>Game</strong> tab. The eliminated list still follows classic vs elimination mode.</p>
-        <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:0.85rem;margin-bottom:8px;cursor:pointer">
-          <input type="checkbox" id="uiShowWinners" checked style="width:16px;height:16px;accent-color:var(--accent1)" onchange="persistAndApplyGameSidebarUi(false)">
-          🏆 Winners list
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:0.85rem;margin-bottom:8px;cursor:pointer">
-          <input type="checkbox" id="uiShowEliminated" checked style="width:16px;height:16px;accent-color:var(--accent1)" onchange="persistAndApplyGameSidebarUi(false)">
-          💀 Eliminated list
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:0.85rem;margin-bottom:10px;cursor:pointer">
-          <input type="checkbox" id="uiShowLbPreview" checked style="width:16px;height:16px;accent-color:var(--accent1)" onchange="persistAndApplyGameSidebarUi(false)">
-          🏅 Leaderboard preview
-        </label>
-        <button type="button" class="btn btn-secondary btn-sm" onclick="persistAndApplyGameSidebarUi(true)">💾 Save layout</button>
-      </div>
-
-      <!-- Elimination auto-spin delay -->
-      <div class="panel" style="margin-bottom:16px">
-        <div class="panel-title">💥 Elimination auto-spin</div>
-        <p style="font-size:0.8rem;color:var(--text2);font-weight:600;margin-bottom:8px">When <strong>Auto-spin</strong> is on, after each elimination a countdown runs on the pop-up before the next spin (minimum 3 seconds).</p>
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <label class="form-label" style="margin:0">Delay (seconds)</label>
-          <input class="form-input" type="number" id="elimAutospinDelayInput" min="3" max="300" value="5" style="width:88px">
-          <button type="button" class="btn btn-primary btn-sm" onclick="saveElimAutospinSettings()">💾 Save</button>
+        <div class="panel-title">📌 Game Screen Widgets</div>
+        <p style="font-size:0.8rem;color:var(--text2);font-weight:600;margin-bottom:10px">Show/hide panels beside the wheel on the Game tab.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
+          <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:0.82rem;cursor:pointer">
+            <input type="checkbox" id="uiShowWinners" checked style="width:15px;height:15px;accent-color:var(--accent1)" onchange="persistAndApplyGameSidebarUi(false)">
+            🏆 Winners
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:0.82rem;cursor:pointer">
+            <input type="checkbox" id="uiShowEliminated" checked style="width:15px;height:15px;accent-color:var(--accent1)" onchange="persistAndApplyGameSidebarUi(false)">
+            💀 Eliminated
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:0.82rem;cursor:pointer">
+            <input type="checkbox" id="uiShowLbPreview" checked style="width:15px;height:15px;accent-color:var(--accent1)" onchange="persistAndApplyGameSidebarUi(false)">
+            🏅 LB Preview
+          </label>
         </div>
-      </div>
-
-      <!-- Background music -->
-      <div class="panel" style="margin-bottom:16px">
-        <button class="section-toggle-btn open" onclick="toggleSection('musicSection', this)">
-          <span>🎵 Background Music</span>
-          <span class="toggle-icon">▲</span>
-        </button>
-        <div class="collapsible-section" id="musicSection" style="margin-top:10px">
-          <p style="font-size:0.8rem;color:var(--text2);font-weight:600;margin-bottom:8px">Pick a file — plays locally, never uploaded anywhere.</p>
-          <input type="file" id="musicFileInput" accept="audio/*" style="margin-bottom:8px;font-size:0.8rem;max-width:100%">
+        <div style="border-top:1px dashed var(--border);padding-top:10px;margin-top:4px">
+          <div style="font-size:0.78rem;font-weight:800;color:var(--text2);margin-bottom:6px">💥 Elim auto-spin delay (sec)</div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <button type="button" class="btn btn-primary btn-sm" id="musicPlayBtn" onclick="toggleBackgroundMusic()">▶️ Play</button>
-            <label style="display:flex;align-items:center;gap:6px;font-weight:700;font-size:0.8rem">
-              Vol <input type="range" id="musicVolume" min="0" max="1" step="0.05" value="0.4" style="width:100px;accent-color:var(--accent1)">
-            </label>
+            <input class="form-input" type="number" id="elimAutospinDelayInput" min="3" max="300" value="5" style="width:80px">
+            <button type="button" class="btn btn-primary btn-sm" onclick="saveElimAutospinSettings()">💾 Save</button>
           </div>
-          <audio id="bgMusicAudio" loop></audio>
         </div>
+        <button type="button" class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="persistAndApplyGameSidebarUi(true)">💾 Save layout</button>
       </div>
 
-      <!-- Sounds -->
-      <div class="panel">
-        <button class="section-toggle-btn open" onclick="toggleSection('sfxSection', this)">
-          <span>🔊 Sound Effects</span>
-          <span class="toggle-icon">▲</span>
-        </button>
-        <div class="collapsible-section" id="sfxSection" style="margin-top:10px">
-          <div style="display:flex;flex-direction:column;gap:8px">
-            <label style="display:flex;align-items:center;gap:10px;font-weight:700;cursor:pointer;font-size:0.85rem">
-              <input type="checkbox" id="sfxSpin" checked style="width:16px;height:16px;accent-color:var(--accent1)"> 🎡 Wheel Spin
-            </label>
-            <label style="display:flex;align-items:center;gap:10px;font-weight:700;cursor:pointer;font-size:0.85rem">
-              <input type="checkbox" id="sfxWin" checked style="width:16px;height:16px;accent-color:var(--accent1)"> 🏆 Winner Fanfare
-            </label>
-            <label style="display:flex;align-items:center;gap:10px;font-weight:700;cursor:pointer;font-size:0.85rem">
-              <input type="checkbox" id="sfxElim" checked style="width:16px;height:16px;accent-color:var(--accent1)"> 💥 Elimination
-            </label>
-            <label style="display:flex;align-items:center;gap:10px;font-weight:700;cursor:pointer;font-size:0.85rem">
-              <input type="checkbox" id="sfxCountdown" checked style="width:16px;height:16px;accent-color:var(--accent1)"> ⏰ Countdown Tick
-            </label>
-            <div style="margin-top:4px">
-              <label class="form-label">🔉 Volume</label>
-              <input type="range" id="sfxVolume" min="0" max="1" step="0.05" value="0.7" style="width:100%;accent-color:var(--accent1)">
-            </div>
-          </div>
-        </div>
+      <!-- Session -->
+      <div class="panel" style="margin-bottom:16px">
+        <div class="panel-title">🚪 Session</div>
+        <p style="font-size:0.8rem;color:var(--text2);font-weight:600;margin-bottom:10px">Return to the welcome screen. Data stays in this browser until you clear site data.</p>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="swlLogoutToLanding()">Log out</button>
       </div>
     </div>
 
@@ -1780,24 +1815,125 @@ body {
           <span class="toggle-icon">▲</span>
         </button>
         <div class="collapsible-section" id="integrationsSection" style="margin-top:12px">
-          <p style="font-size:0.78rem;font-weight:600;color:var(--text2);margin-bottom:12px">Scaffolded and ready for API keys once available.</p>
+          <p style="font-size:0.78rem;font-weight:600;color:var(--text2);margin-bottom:12px">Connect your stream tools here. API keys are stored securely server-side — only space links and commands are needed from you.</p>
           <div class="form-group">
-            <label class="form-label">📡 Xsee API Key</label>
-            <input class="form-input" id="xseeApiKey" placeholder="Paste your Xsee API key here…" style="opacity:0.65" disabled />
+            <label class="form-label">🔗 Xsee Space Link <span style="font-weight:500;font-size:0.68rem">(once API is live)</span></label>
+            <input class="form-input" id="xseeSpaceLink" placeholder="https://xsee.tv/yourspace" oninput="saveXseeSpaceLink()" />
+            <div style="font-size:0.72rem;font-weight:600;color:var(--text2);margin-top:3px">Your Space URL — used to auto-fetch participants when the Xsee API goes live.</div>
           </div>
           <div class="form-group">
-            <label class="form-label">🗄️ Database Endpoint <span style="font-weight:500">(winners sync)</span></label>
-            <input class="form-input" id="dbEndpoint" placeholder="https://your-api.com/winners" style="opacity:0.65" disabled />
-          </div>
-          <div class="form-group">
-            <label class="form-label">📢 Ad Network Tag ID</label>
-            <input class="form-input" id="adNetworkId" placeholder="Publisher ID / ad tag" style="opacity:0.65" disabled />
+            <label class="form-label">💬 Auto-Join Chat Command</label>
+            <div style="display:flex;gap:6px;align-items:center">
+              <input class="form-input" id="chatJoinCommand" placeholder="e.g. !join or !enter" style="flex:1" oninput="saveChatCommand()">
+            </div>
+            <div style="font-size:0.72rem;font-weight:600;color:var(--text2);margin-top:4px">When chat API is connected, viewers typing this command will auto-join the entries list.</div>
           </div>
           <div style="font-size:0.75rem;font-weight:600;color:var(--text2);line-height:1.55;background:var(--bg2);padding:8px 10px;border-radius:8px;border:1px solid var(--border)">
-            💡 <strong>Roadmap:</strong><br>
-            • Xsee Space link → auto-fetch all participants<br>
-            • Winners auto-posted to your database<br>
-            • Ad network tag → revenue from ad impressions
+            💡 <strong>Roadmap:</strong> Xsee Space → auto-fetch participants · Cloud winner storage (Premium)
+          </div>
+        </div>
+      </div>
+
+      <!-- Auto-Loop Cycle (Premium — free now) -->
+      <div class="panel" style="margin-bottom:16px;border-color:var(--accent6)">
+        <button class="section-toggle-btn" onclick="toggleSection('autoCycleSection', this)">
+          <span style="color:var(--accent6)">🔁 Auto-Loop Cycle <span class="api-badge" style="margin-left:6px">Free now · Premium later</span></span>
+          <span class="toggle-icon">▼</span>
+        </button>
+        <div class="collapsible-section closed" id="autoCycleSection" style="margin-top:12px">
+          <p style="font-size:0.8rem;color:var(--text2);font-weight:600;margin-bottom:10px">Set up a game, then loop it automatically. Wheel spins, picks a winner, restarts after a wait — perfect for long streams.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">⏳ Wait between rounds (min)</label>
+              <input class="form-input" type="number" id="cycleWaitMins" min="0.5" step="0.5" value="5" placeholder="5">
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">🔄 Loops <span style="font-weight:500">(0 = ∞)</span></label>
+              <input class="form-input" type="number" id="cycleLoopCount" min="0" value="0" placeholder="0 = unlimited">
+            </div>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:0.82rem;cursor:pointer;margin-bottom:10px">
+            <input type="checkbox" id="cycleAutoclearEntries" style="width:15px;height:15px;accent-color:var(--accent6)">
+            🧹 Auto-clear entries each round
+            <span style="font-size:0.68rem;font-weight:600;color:var(--text2)">(off = keep entries, great for recurring viewer pools)</span>
+          </label>
+          <div id="cycleStatusMsg" style="font-size:0.78rem;font-weight:700;color:var(--accent6);display:none;padding:6px 10px;background:rgba(199,125,255,0.1);border-radius:8px;border:1px solid var(--accent6);margin-bottom:8px"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button type="button" class="btn btn-primary btn-sm" id="cycleStartBtn" onclick="startAutoCycle()">▶ Start Cycle</button>
+            <button type="button" class="btn btn-danger btn-sm" id="cycleStopBtn" onclick="stopAutoCycle()" style="display:none">⏹ Stop Cycle</button>
+          </div>
+          <div style="font-size:0.72rem;font-weight:600;color:var(--text2);margin-top:8px">💡 Set up prize &amp; mode in Game tab first, add entries, then start the cycle here.</div>
+        </div>
+      </div>
+
+      <!-- Background music -->
+      <div class="panel" style="margin-bottom:16px">
+        <button class="section-toggle-btn open" onclick="toggleSection('musicSection', this)">
+          <span>🎵 Background Music</span>
+          <span class="toggle-icon">▲</span>
+        </button>
+        <div class="collapsible-section" id="musicSection" style="margin-top:10px">
+          <p style="font-size:0.8rem;color:var(--text2);font-weight:600;margin-bottom:8px">Pick files — play locally, never uploaded anywhere.</p>
+          <label class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;margin-bottom:8px">
+            ➕ Add Songs
+            <input type="file" id="musicFileInput" accept="audio/*" multiple style="display:none">
+          </label>
+          <!-- Playlist -->
+          <div id="musicPlaylist" style="margin-bottom:8px;display:flex;flex-direction:column;gap:4px;max-height:180px;overflow-y:auto"></div>
+          <!-- Controls -->
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px">
+            <button type="button" class="btn btn-secondary btn-xs" onclick="musicPrev()" title="Previous">⏮</button>
+            <button type="button" class="btn btn-primary btn-sm" id="musicPlayBtn" onclick="toggleBackgroundMusic()">▶️ Play</button>
+            <button type="button" class="btn btn-secondary btn-xs" onclick="musicNext()" title="Next">⏭</button>
+            <label style="display:flex;align-items:center;gap:6px;font-weight:700;font-size:0.8rem">
+              🔉 <input type="range" id="musicVolume" min="0" max="1" step="0.05" value="0.4" style="width:90px;accent-color:var(--accent1)">
+            </label>
+          </div>
+          <div id="musicNowPlaying" style="font-size:0.72rem;font-weight:700;color:var(--text2);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+          <audio id="bgMusicAudio"></audio>
+        </div>
+      </div>
+
+      <!-- Sounds -->
+      <div class="panel" style="margin-bottom:16px">
+        <button class="section-toggle-btn open" onclick="toggleSection('sfxSection', this)">
+          <span>🔊 Sound Effects</span>
+          <span class="toggle-icon">▲</span>
+        </button>
+        <div class="collapsible-section" id="sfxSection" style="margin-top:10px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+            <label style="display:flex;align-items:center;gap:8px;font-weight:700;cursor:pointer;font-size:0.82rem">
+              <input type="checkbox" id="sfxSpin" checked style="width:15px;height:15px;accent-color:var(--accent1)"> 🎡 Spin
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-weight:700;cursor:pointer;font-size:0.82rem">
+              <input type="checkbox" id="sfxWin" checked style="width:15px;height:15px;accent-color:var(--accent1)"> 🏆 Fanfare
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-weight:700;cursor:pointer;font-size:0.82rem">
+              <input type="checkbox" id="sfxElim" checked style="width:15px;height:15px;accent-color:var(--accent1)"> 💥 Elimination
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-weight:700;cursor:pointer;font-size:0.82rem">
+              <input type="checkbox" id="sfxCountdown" checked style="width:15px;height:15px;accent-color:var(--accent1)"> ⏰ Countdown
+            </label>
+          </div>
+          <div>
+            <label class="form-label">🔉 Volume</label>
+            <input type="range" id="sfxVolume" min="0" max="1" step="0.05" value="0.7" style="width:100%;accent-color:var(--accent1)">
+          </div>
+          <div style="border-top:1px dashed var(--border);margin-top:10px;padding-top:10px">
+            <div style="font-size:0.78rem;font-weight:800;color:var(--text2);margin-bottom:6px">🎊 Confetti</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <label style="display:flex;align-items:center;gap:8px;font-weight:700;cursor:pointer;font-size:0.82rem">
+                <input type="checkbox" id="confettiEnabled" checked style="width:15px;height:15px;accent-color:var(--accent1)" onchange="saveConfettiSettings()"> Enable
+              </label>
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <div style="font-size:0.72rem;font-weight:700;color:var(--text2)">Intensity</div>
+                <select id="confettiIntensity" class="form-input" style="padding:4px 8px;font-size:0.78rem" onchange="saveConfettiSettings()">
+                  <option value="low">🌿 Low (25)</option>
+                  <option value="normal" selected>🎊 Normal (70)</option>
+                  <option value="high">🎆 High (150)</option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1814,11 +1950,10 @@ body {
             <input type="checkbox" id="adEnabled" onchange="updateAdBanner()" style="width:16px;height:16px;accent-color:var(--accent1)"> Enable Banner
           </label>
           <div class="form-group">
-            <label class="form-label">📝 Ad Text <span style="font-weight:500">(max chars set below)</span></label>
+            <label class="form-label">📝 Ad Text <span style="font-weight:500">(max 150 characters)</span></label>
             <textarea class="form-textarea" id="adTextInput" placeholder="Sponsor message or ad text here…" oninput="enforceAdTextLimit()" style="height:60px"></textarea>
             <div style="display:flex;justify-content:space-between;margin-top:3px">
-              <span id="adTextCharCount" style="font-size:0.72rem;color:var(--text2);font-weight:700">0 chars</span>
-              <span style="font-size:0.72rem;color:var(--text2);font-weight:600">Max: <input type="number" id="adTextMaxLen" value="150" min="10" max="500" style="width:54px;padding:1px 5px;border-radius:5px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:0.72rem;font-weight:700" onchange="enforceAdTextLimit()"> chars</span>
+              <span id="adTextCharCount" style="font-size:0.72rem;color:var(--text2);font-weight:700">0 / 150</span>
             </div>
           </div>
           <div class="form-group">
@@ -1851,17 +1986,39 @@ body {
   </div>
 </section>
 
-<!-- ===== LOG PAGE ===== -->
+<!-- ===== LOG PAGE (unified) ===== -->
 <section class="page" id="page-log">
   <div class="tab-page-scroll">
-  <div class="log-filters">
-    <div style="font-family:var(--font-display);font-size:1.2rem;color:var(--text)">📋 Game History</div>
-    <div style="flex:1"></div>
-    <button class="btn btn-secondary btn-sm" onclick="exportLogCSV()">📤 CSV</button>
-    <button class="btn btn-danger btn-sm" onclick="clearLog()">🗑️ Clear</button>
+  <!-- Sub-tab bar -->
+  <div style="display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:12px;flex-shrink:0">
+    <button id="logtab-games" onclick="switchLogTab('games')" style="padding:8px 20px;font-weight:800;font-size:0.85rem;border:none;background:none;cursor:pointer;color:var(--accent1);border-bottom:3px solid var(--accent1);margin-bottom:-2px">📋 Game Log</button>
+    <button id="logtab-cycles" onclick="switchLogTab('cycles')" style="padding:8px 20px;font-weight:800;font-size:0.85rem;border:none;background:none;cursor:pointer;color:var(--text2);border-bottom:3px solid transparent;margin-bottom:-2px">🔁 Cycle Log</button>
   </div>
-  <div id="logContainer">
-    <div class="log-empty">🎡 No games yet. Start a game to see history here!</div>
+
+  <!-- Game log sub-page -->
+  <div id="logSubGames">
+    <div class="log-filters">
+      <div style="font-family:var(--font-display);font-size:1.1rem;color:var(--text)">📋 Game History</div>
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary btn-sm" onclick="exportLogCSV()">📤 CSV</button>
+      <button class="btn btn-danger btn-sm" onclick="clearLog()">🗑️ Clear</button>
+    </div>
+    <div id="logContainer">
+      <div class="log-empty">🎡 No games yet. Start a game to see history here!</div>
+    </div>
+  </div>
+
+  <!-- Cycle log sub-page -->
+  <div id="logSubCycles" style="display:none">
+    <div class="log-filters">
+      <div style="font-family:var(--font-display);font-size:1.1rem;color:var(--text)">🔁 Cycle History</div>
+      <div style="flex:1"></div>
+      <button class="btn btn-secondary btn-sm" onclick="exportCycleLogCSV()">📤 CSV</button>
+      <button class="btn btn-danger btn-sm" onclick="clearCycleLog()">🗑️ Clear</button>
+    </div>
+    <div id="cycleLogContainer">
+      <div class="log-empty">🔁 No cycles yet. Start an Auto-Loop Cycle in Settings to see history here.</div>
+    </div>
   </div>
   </div>
 </section>
@@ -1898,7 +2055,7 @@ let state = {
   elimOverlayAutospinInterval: null,
 };
 
-let musicObjectUrl = null;
+let wheelLogoImg = null; // custom logo for wheel center circle
 let gameLog     = JSON.parse(localStorage.getItem('sw_log') || '[]');
 let leaderboard = JSON.parse(localStorage.getItem('sw_lb') || '[]');
 const LB_CONFIG_DEFAULTS = {
@@ -1975,6 +2132,14 @@ document.addEventListener('DOMContentLoaded', () => {
   initHeaderScrollHide();
   loadElimAutospinSettingsUI();
   loadGameSidebarUiSettings();
+  loadWheelLogoFromStorage();
+  loadWheelCenterSizeUI();
+  loadChatCommand();
+  loadXseeSpaceLink();
+  renderCycleLog();
+  loadConfettiSettings();
+  initOnboarding();
+  restoreSessionState();
 });
 
 // ==========================================
@@ -1986,13 +2151,23 @@ function showTab(name) {
   document.getElementById('page-' + name).classList.add('active');
   document.getElementById('tab-' + name).classList.add('active');
   document.querySelector('.header')?.classList.remove('header-hidden');
-  if (name === 'log') renderLog();
+  if (name === 'log') { renderLog(); renderCycleLog(); }
   if (name === 'leaderboard') renderLeaderboard();
 }
 
-// ==========================================
-//  THEME
-// ==========================================
+function switchLogTab(tab) {
+  const isGames = tab === 'games';
+  document.getElementById('logSubGames').style.display = isGames ? '' : 'none';
+  document.getElementById('logSubCycles').style.display = isGames ? 'none' : '';
+  const gBtn = document.getElementById('logtab-games');
+  const cBtn = document.getElementById('logtab-cycles');
+  gBtn.style.color = isGames ? 'var(--accent1)' : 'var(--text2)';
+  gBtn.style.borderBottomColor = isGames ? 'var(--accent1)' : 'transparent';
+  cBtn.style.color = isGames ? 'var(--text2)' : 'var(--accent6)';
+  cBtn.style.borderBottomColor = isGames ? 'transparent' : 'var(--accent6)';
+}
+
+
 const THEMES = ['colorful', 'dark-neon'];
 const THEME_LABELS = { 'colorful': '🌈 Colorful', 'dark-neon': '⚡ Neon' };
 function setTheme(t) { currentTheme = t; localStorage.setItem('sw_theme', t); applyTheme(t); }
@@ -2083,32 +2258,96 @@ function applyWheelSize(px) {
 }
 
 // ==========================================
-//  BACKGROUND MUSIC
+//  BACKGROUND MUSIC (PLAYLIST)
 // ==========================================
+let musicPlaylist = []; // [{name, url}]
+let musicCurrentIdx = 0;
+let musicObjectUrls = [];
+
 function initBackgroundMusicUI() {
   const vol = parseFloat(localStorage.getItem('sw_music_vol') || '0.4');
   const vEl = document.getElementById('musicVolume');
   const audio = document.getElementById('bgMusicAudio');
   if (vEl) { vEl.value = String(vol); vEl.addEventListener('input', () => { audio.volume = parseFloat(vEl.value); localStorage.setItem('sw_music_vol', vEl.value); }); }
-  if (audio) audio.volume = vol;
+  if (audio) { audio.volume = vol; audio.onended = musicNext; audio.onplay = updateMusicPlayLabel; audio.onpause = updateMusicPlayLabel; }
   const fin = document.getElementById('musicFileInput');
   if (fin) fin.addEventListener('change', () => {
-    const f = fin.files && fin.files[0]; if (!f) return;
-    if (musicObjectUrl) URL.revokeObjectURL(musicObjectUrl);
-    musicObjectUrl = URL.createObjectURL(f);
-    audio.src = musicObjectUrl;
-    showToast('🎵 Track loaded — press Play');
-    updateMusicPlayLabel();
+    const files = Array.from(fin.files || []); if (!files.length) return;
+    files.forEach(f => {
+      const url = URL.createObjectURL(f);
+      musicObjectUrls.push(url);
+      musicPlaylist.push({ name: f.name, url });
+    });
+    renderMusicPlaylist();
+    if (musicPlaylist.length === files.length) musicLoadTrack(0); // first batch
+    showToast(`🎵 ${files.length} track${files.length>1?'s':''} added`);
+    fin.value = '';
   });
-  if (audio) { audio.onplay = updateMusicPlayLabel; audio.onpause = updateMusicPlayLabel; }
 }
+
+function renderMusicPlaylist() {
+  const el = document.getElementById('musicPlaylist'); if (!el) return;
+  if (!musicPlaylist.length) { el.innerHTML = ''; return; }
+  el.innerHTML = musicPlaylist.map((t, i) => `
+    <div style="display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:8px;background:${i===musicCurrentIdx?'var(--bg2)':'transparent'};border:1.5px solid ${i===musicCurrentIdx?'var(--accent1)':'transparent'}">
+      <span style="font-size:0.7rem;font-weight:800;color:var(--text2);min-width:18px">${i+1}.</span>
+      <span style="flex:1;font-size:0.75rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer" onclick="musicLoadTrack(${i});toggleBackgroundMusic()" title="${escHtml(t.name)}">${escHtml(t.name.replace(/\.[^.]+$/,''))}</span>
+      <button class="btn btn-secondary btn-xs" onclick="musicMoveUp(${i})" title="Move up" ${i===0?'disabled':''}>↑</button>
+      <button class="btn btn-secondary btn-xs" onclick="musicMoveDown(${i})" title="Move down" ${i===musicPlaylist.length-1?'disabled':''}>↓</button>
+      <button class="btn btn-danger btn-xs" onclick="musicRemove(${i})" title="Remove">✕</button>
+    </div>`).join('');
+  const nowEl = document.getElementById('musicNowPlaying');
+  if (nowEl && musicPlaylist[musicCurrentIdx]) nowEl.textContent = '🎵 ' + musicPlaylist[musicCurrentIdx].name.replace(/\.[^.]+$/,'');
+}
+
+function musicLoadTrack(idx) {
+  if (idx < 0 || idx >= musicPlaylist.length) return;
+  musicCurrentIdx = idx;
+  const audio = document.getElementById('bgMusicAudio');
+  if (audio) { audio.src = musicPlaylist[idx].url; audio.load(); }
+  renderMusicPlaylist();
+}
+function musicRemove(idx) {
+  URL.revokeObjectURL(musicPlaylist[idx].url);
+  musicObjectUrls = musicObjectUrls.filter(u => u !== musicPlaylist[idx].url);
+  musicPlaylist.splice(idx, 1);
+  if (musicCurrentIdx >= musicPlaylist.length) musicCurrentIdx = Math.max(0, musicPlaylist.length - 1);
+  if (musicPlaylist.length) musicLoadTrack(musicCurrentIdx);
+  else { const a = document.getElementById('bgMusicAudio'); if (a) { a.pause(); a.src = ''; } }
+  renderMusicPlaylist(); updateMusicPlayLabel();
+}
+function musicMoveUp(idx) {
+  if (idx === 0) return;
+  [musicPlaylist[idx-1], musicPlaylist[idx]] = [musicPlaylist[idx], musicPlaylist[idx-1]];
+  if (musicCurrentIdx === idx) musicCurrentIdx--; else if (musicCurrentIdx === idx-1) musicCurrentIdx++;
+  renderMusicPlaylist();
+}
+function musicMoveDown(idx) {
+  if (idx >= musicPlaylist.length-1) return;
+  [musicPlaylist[idx+1], musicPlaylist[idx]] = [musicPlaylist[idx], musicPlaylist[idx+1]];
+  if (musicCurrentIdx === idx) musicCurrentIdx++; else if (musicCurrentIdx === idx+1) musicCurrentIdx--;
+  renderMusicPlaylist();
+}
+function musicNext() {
+  if (!musicPlaylist.length) return;
+  musicLoadTrack((musicCurrentIdx + 1) % musicPlaylist.length);
+  const a = document.getElementById('bgMusicAudio');
+  if (a) a.play().catch(()=>{});
+}
+function musicPrev() {
+  if (!musicPlaylist.length) return;
+  musicLoadTrack((musicCurrentIdx - 1 + musicPlaylist.length) % musicPlaylist.length);
+  const a = document.getElementById('bgMusicAudio');
+  if (a) a.play().catch(()=>{});
+}
+
 function updateMusicPlayLabel() {
   const a = document.getElementById('bgMusicAudio'); const b = document.getElementById('musicPlayBtn');
   if (!a || !b) return; b.textContent = a.paused ? '▶️ Play' : '⏸ Pause';
 }
 function toggleBackgroundMusic() {
   const a = document.getElementById('bgMusicAudio');
-  if (!a || !a.src) { showToast('⚠️ Choose a music file first'); return; }
+  if (!a || !a.src) { showToast('⚠️ Add a music file first'); return; }
   if (a.paused) a.play().then(updateMusicPlayLabel).catch(() => showToast('⚠️ Could not play'));
   else { a.pause(); updateMusicPlayLabel(); }
 }
@@ -2159,6 +2398,8 @@ function confirmSetup() {
   updateEntriesIndicator();
   document.getElementById('entriesBox').focus();
   syncSetupToggleBtn();
+  dismissOnboarding();
+  saveSessionState();
   showToast('✅ Setup saved! Add entries.');
 }
 
@@ -2185,11 +2426,25 @@ function updateEntryCount() {
   document.getElementById('entryCountText').textContent = e.length + ' entr' + (e.length === 1 ? 'y' : 'ies');
 }
 function onEntriesInput() {
-  updateEntryCount(); updateEntriesIndicator();
+  updateEntryCount(); updateEntriesIndicator(); checkDuplicateEntries();
   if (state.gameStarted && !state.gameOver) {
     const entries = getEntries();
     state.entries = [...entries]; state.remaining = [...entries];
     updateRemainingBadge(); drawWheel(entries);
+  }
+  saveSessionState();
+}
+function checkDuplicateEntries() {
+  const entries = getEntries();
+  const seen = {}, dupes = new Set();
+  entries.forEach(e => { const k = e.toLowerCase(); if (seen[k]) dupes.add(e); else seen[k] = true; });
+  const warn = document.getElementById('duplicateWarning');
+  if (!warn) return;
+  if (dupes.size > 0) {
+    warn.style.display = 'block';
+    warn.textContent = `⚠️ ${dupes.size} duplicate name${dupes.size > 1 ? 's' : ''} detected: ${[...dupes].slice(0,3).join(', ')}${dupes.size > 3 ? '…' : ''}`;
+  } else {
+    warn.style.display = 'none';
   }
 }
 function updateEntriesIndicator() {
@@ -2220,31 +2475,15 @@ function shuffleEntries() {
 // ==========================================
 async function fetchSpaceParticipants() {
   // TODO: Replace with real Xsee API call once credentials are available
-  // const apiKey = document.getElementById('xseeApiKey').value;
-  // const spaceUrl = document.getElementById('xseeSpaceUrl').value;
+  // const spaceUrl = document.getElementById('xseeSpaceLink').value;
   // const resp = await fetch(`https://api.xsee.io/v1/space/participants?url=${encodeURIComponent(spaceUrl)}`, {
-  //   headers: { 'Authorization': `Bearer ${apiKey}` }
+  //   headers: { 'Authorization': `Bearer BACKEND_KEY` }
   // });
   // const data = await resp.json();
   // const names = data.participants.map(p => p.username);
   // document.getElementById('entriesBox').value = names.join('\n');
   // onEntriesInput();
   showToast('🔌 Xsee API not connected yet — coming soon!');
-}
-
-// ==========================================
-//  WINNER DB SCAFFOLD (future)
-// ==========================================
-async function syncWinnersToDb(winners, prize, mode) {
-  // TODO: Replace with real DB endpoint once available
-  // const endpoint = document.getElementById('dbEndpoint').value || localStorage.getItem('sw_dbEndpoint');
-  // if (!endpoint) return;
-  // await fetch(endpoint, {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ winners, prize, mode, date: new Date().toISOString() })
-  // });
-  console.log('[StreamWheel] DB sync scaffold — winners:', winners, 'prize:', prize);
 }
 
 // ==========================================
@@ -2291,6 +2530,7 @@ function startGame() {
     setStatus('🎉 ' + entries.length + ' entries loaded! Press SPIN!');
     document.getElementById('entriesBox').readOnly = true;
   }
+  saveSessionState();
 }
 
 function resetGame() {
@@ -2314,6 +2554,7 @@ function resetGame() {
   drawWheel([]);
   setStatus('👈 Add entries and press <strong>Start Game!</strong>');
   showToast('🔄 Game reset!');
+  saveSessionState();
 }
 
 // ==========================================
@@ -2401,10 +2642,23 @@ function drawWheel(segments, angle = 0) {
     ctx.fillStyle = grad; ctx.fill();
     ctx.strokeStyle = currentTheme==='dark-neon' ? '#7c3aed' : '#ffd97d';
     ctx.lineWidth = 5; ctx.stroke();
-    ctx.font = `bold ${Math.max(14, W*0.045)}px Fredoka One, cursive`;
-    ctx.fillStyle = currentTheme==='dark-neon' ? '#a78bfa' : '#7a5c2e';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('Add entries &', cx, cy-12); ctx.fillText('start the game!', cx, cy+12);
+    // Center circle on empty wheel
+    const [csOuter, csClip, csOff] = WHEEL_CENTER_SIZES[wheelCenterSize] || WHEEL_CENTER_SIZES.s;
+    ctx.beginPath(); ctx.arc(cx,cy,csOuter,0,Math.PI*2);
+    ctx.fillStyle = currentTheme==='dark-neon' ? '#1a1a2e' : '#ffffff'; ctx.fill();
+    ctx.strokeStyle = currentTheme==='dark-neon' ? '#7c3aed' : '#ffd97d'; ctx.lineWidth = 4; ctx.stroke();
+    if (wheelLogoImg) {
+      try {
+        ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,csClip,0,Math.PI*2); ctx.clip();
+        ctx.drawImage(wheelLogoImg, cx-csOff, cy-csOff, csOff*2, csOff*2); ctx.restore();
+      } catch(e) { ctx.restore(); wheelLogoImg = null; }
+    } else {
+      const emojiSize = Math.max(20, csOuter * 0.85);
+      ctx.font = `bold ${emojiSize}px Nunito, sans-serif`;
+      ctx.fillStyle = currentTheme==='dark-neon' ? '#a78bfa' : '#ffd93d';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('🎡', cx, cy);
+    }
     return;
   }
 
@@ -2430,9 +2684,16 @@ function drawWheel(segments, angle = 0) {
   ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
   ctx.strokeStyle = currentTheme==='dark-neon' ? '#7c3aed' : '#ffd97d';
   ctx.lineWidth = 6; ctx.stroke();
-  ctx.beginPath(); ctx.arc(cx,cy,28,0,Math.PI*2);
+  const [csOuter2, csClip2, csOff2] = WHEEL_CENTER_SIZES[wheelCenterSize] || WHEEL_CENTER_SIZES.s;
+  ctx.beginPath(); ctx.arc(cx,cy,csOuter2,0,Math.PI*2);
   ctx.fillStyle = currentTheme==='dark-neon' ? '#1a1a2e' : '#ffffff'; ctx.fill();
   ctx.strokeStyle = currentTheme==='dark-neon' ? '#7c3aed' : '#ffd97d'; ctx.lineWidth = 4; ctx.stroke();
+  if (wheelLogoImg) {
+    try {
+      ctx.save(); ctx.beginPath(); ctx.arc(cx,cy,csClip2,0,Math.PI*2); ctx.clip();
+      ctx.drawImage(wheelLogoImg, cx-csOff2, cy-csOff2, csOff2*2, csOff2*2); ctx.restore();
+    } catch(e) { ctx.restore(); }
+  }
 }
 
 // ==========================================
@@ -2636,14 +2897,12 @@ function endGame() {
     updateLeaderboardWithWinners(state.winners);
   }
 
-  // Scaffold: sync to DB
-  syncWinnersToDb(state.winners, state.prize, state.mode);
-
   const winStr = state.winners.join(', ');
   setStatus(`🎊 Done! Winner${state.winners.length>1?'s':''}: <strong>${escHtml(winStr)}</strong>`);
   showToast('🎊 Game complete!');
   launchConfetti(); playWin();
   updateLbPreview();
+  saveSessionState();
 }
 
 // ==========================================
@@ -2837,7 +3096,9 @@ function updateLbPreview() {
   if (leaderboard.length === 0) { el.innerHTML = '<span style="color:var(--text2)">No entries yet.</span>'; return; }
   const top5 = leaderboard.slice(0, 5);
   const icons = ['🥇','🥈','🥉','4.','5.'];
-  el.innerHTML = top5.map((e,i) => `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border)"><span>${icons[i]} <strong>${escHtml(e.name)}</strong></span><span style="color:var(--accent1)">${e.points} pts</span></div>`).join('');
+  el.innerHTML = '<div style="max-height:88px;overflow-y:auto;scrollbar-width:thin">' +
+    top5.map((e,i) => `<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--border)${i>=3?';opacity:0.6':''}">${icons[i]} <strong>${escHtml(e.name)}</strong><span style="color:var(--accent1)">${e.points} pts</span></div>`).join('') +
+    '</div>' + (leaderboard.length > 3 ? '<div style="font-size:0.68rem;color:var(--text2);margin-top:3px;font-weight:600;text-align:center">↕ Scroll for more · <a href="#" style="color:var(--accent4);text-decoration:none" onclick="showTab(\'leaderboard\');return false">Full board →</a></div>' : '');
 }
 
 function removeLbEntry(name) {
@@ -2938,14 +3199,13 @@ function loadAdSettingsUI() {
   document.getElementById('adEnabled').checked = adSettings.enabled;
   document.getElementById('adTextInput').value = adSettings.text || '';
   document.getElementById('adImageUrl').value = adSettings.imageUrl || '';
-  document.getElementById('adTextMaxLen').value = adSettings.maxLen || 150;
   enforceAdTextLimit(); updateAdPreview();
 }
 function enforceAdTextLimit() {
-  const max = parseInt(document.getElementById('adTextMaxLen').value) || 150;
+  const max = 150;
   const ta = document.getElementById('adTextInput');
   if (ta.value.length > max) ta.value = ta.value.substring(0, max);
-  document.getElementById('adTextCharCount').textContent = ta.value.length + ' chars';
+  document.getElementById('adTextCharCount').textContent = ta.value.length + ' / ' + max;
   updateAdPreview();
 }
 function updateAdPreview() {
@@ -2961,7 +3221,7 @@ function saveAdSettings() {
   adSettings.enabled = document.getElementById('adEnabled').checked;
   adSettings.text = document.getElementById('adTextInput').value.trim();
   adSettings.imageUrl = document.getElementById('adImageUrl').value.trim();
-  adSettings.maxLen = parseInt(document.getElementById('adTextMaxLen').value) || 150;
+  adSettings.maxLen = 150;
   localStorage.setItem('sw_ad', JSON.stringify(adSettings));
   applyAdBanner(); showToast('💾 Ad settings saved!');
 }
@@ -3024,13 +3284,15 @@ function exportLogCSV() {
 function clearAllData() {
   if (!confirm('⚠️ Delete ALL data (log, leaderboard, settings, theme)? Cannot be undone.')) return;
   if (!confirm('🚨 Last chance — confirm full reset?')) return;
-  ['sw_log','sw_lb','sw_lbconfig','sw_ad','sw_theme','sw_wheel','sw_music_vol','sw_elim_autospin_sec','sw_ui_show_winners','sw_ui_show_eliminated','sw_ui_show_lb_preview'].forEach(k => localStorage.removeItem(k));
-  gameLog=[]; leaderboard=[];
+  ['sw_log','sw_lb','sw_lbconfig','sw_ad','sw_theme','sw_wheel','sw_music_vol','sw_elim_autospin_sec','sw_ui_show_winners','sw_ui_show_eliminated','sw_ui_show_lb_preview','sw_wheel_logo','sw_chat_cmd','sw_xsee_link','sw_cycle_log','sw_confetti_enabled','sw_confetti_intensity','sw_first_setup_done','sw_center_size'].forEach(k => localStorage.removeItem(k));
+  sessionStorage.removeItem(SESSION_KEY);
+  gameLog=[]; leaderboard=[]; cycleLog=[];
   lbConfig = { ...LB_CONFIG_DEFAULTS, prizes: LB_CONFIG_DEFAULTS.prizes.map(p => ({ ...p })) };
   adSettings={enabled:false,text:'',imageUrl:'',maxLen:150};
   currentTheme='colorful'; applyTheme('colorful');
+  wheelLogoImg = null; updateWheelLogoPreviewUI(null);
   renderLog(); renderLeaderboard(); updateLbPreview(); loadLbConfig(); loadAdSettingsUI(); applyAdBanner();
-  loadGameSidebarUiSettings();
+  loadGameSidebarUiSettings(); loadChatCommand(); loadXseeSpaceLink(); renderCycleLog();
   showToast('🗑️ All data cleared!');
 }
 
@@ -3200,14 +3462,586 @@ function playTick(final=false) {
 //  CONFETTI
 // ==========================================
 const CONFETTI_COLORS = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff922b','#cc5de8','#f06595','#74c0fc'];
+const CONFETTI_COUNTS = { low: 25, normal: 70, high: 150 };
+function saveConfettiSettings() {
+  localStorage.setItem('sw_confetti_enabled', document.getElementById('confettiEnabled').checked ? '1' : '0');
+  localStorage.setItem('sw_confetti_intensity', document.getElementById('confettiIntensity').value);
+}
+function loadConfettiSettings() {
+  const enabled = localStorage.getItem('sw_confetti_enabled') !== '0';
+  const intensity = localStorage.getItem('sw_confetti_intensity') || 'normal';
+  const cb = document.getElementById('confettiEnabled');
+  const sel = document.getElementById('confettiIntensity');
+  if (cb) cb.checked = enabled;
+  if (sel) sel.value = intensity;
+}
 function launchConfetti() {
+  if (localStorage.getItem('sw_confetti_enabled') === '0') return;
+  const intensity = localStorage.getItem('sw_confetti_intensity') || 'normal';
+  const count = CONFETTI_COUNTS[intensity] || 70;
   const c = document.getElementById('confettiContainer'); c.innerHTML = '';
-  for (let i=0;i<70;i++) {
+  for (let i = 0; i < count; i++) {
     const p = document.createElement('div'); p.className = 'confetti-piece';
     p.style.cssText = `left:${Math.random()*100}%;top:-16px;background:${CONFETTI_COLORS[Math.floor(Math.random()*CONFETTI_COLORS.length)]};width:${5+Math.random()*9}px;height:${7+Math.random()*11}px;transform:rotate(${Math.random()*360}deg);animation-delay:${Math.random()*0.8}s;animation-duration:${1.8+Math.random()*1.8}s;`;
     c.appendChild(p);
   }
   setTimeout(() => c.innerHTML = '', 3800);
+}
+
+// ==========================================
+//  WHEEL CENTER LOGO
+// ==========================================
+function handleWheelLogoUpload(input) {
+  const file = input.files && input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const dataUrl = e.target.result;
+    try { localStorage.setItem('sw_wheel_logo', dataUrl); } catch(err) { /* storage full — skip save */ }
+    applyWheelLogo(dataUrl);
+    showToast('🖼️ Logo saved!');
+  };
+  reader.readAsDataURL(file);
+}
+function applyWheelLogo(dataUrl) {
+  if (!dataUrl) {
+    wheelLogoImg = null; updateWheelLogoPreviewUI(null);
+    if (state.gameStarted) drawWheel(state.remaining); else drawWheel([]);
+    return;
+  }
+  const img = new Image();
+  img.onload = () => {
+    wheelLogoImg = img;
+    updateWheelLogoPreviewUI(dataUrl);
+    if (state.gameStarted) drawWheel(state.remaining); else drawWheel([]);
+  };
+  img.onerror = () => {
+    wheelLogoImg = null;
+    showToast('⚠️ Could not load logo image — try a different file.');
+  };
+  // Set src after handlers to avoid race
+  img.src = dataUrl;
+}
+// Center circle sizes: [outerCircleR, clipR, drawOffset]
+const WHEEL_CENTER_SIZES = { s: [28,24,24], m: [42,38,38], l: [58,54,54], xl: [76,72,72] };
+let wheelCenterSize = localStorage.getItem('sw_center_size') || 's';
+
+function setWheelCenterSize(size) {
+  wheelCenterSize = size;
+  localStorage.setItem('sw_center_size', size);
+  document.querySelectorAll('.center-size-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.size === size);
+    b.style.background = b.dataset.size === size ? 'var(--accent1)' : '';
+    b.style.color = b.dataset.size === size ? '#fff' : '';
+    b.style.borderColor = b.dataset.size === size ? 'var(--accent1)' : '';
+  });
+  if (state.gameStarted) drawWheel(state.remaining); else drawWheel([]);
+}
+
+function loadWheelCenterSizeUI() {
+  const saved = localStorage.getItem('sw_center_size') || 's';
+  wheelCenterSize = saved;
+  document.querySelectorAll('.center-size-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.size === saved);
+    b.style.background = b.dataset.size === saved ? 'var(--accent1)' : '';
+    b.style.color = b.dataset.size === saved ? '#fff' : '';
+    b.style.borderColor = b.dataset.size === saved ? 'var(--accent1)' : '';
+  });
+}
+
+function updateWheelLogoPreviewUI(dataUrl) {
+  const wrap = document.getElementById('wheelLogoPreviewWrap');
+  const prev = document.getElementById('wheelLogoPreview');
+  if (!wrap || !prev) return;
+  if (dataUrl) { prev.src = dataUrl; wrap.style.display = 'flex'; }
+  else { prev.src = ''; wrap.style.display = 'none'; }
+}
+function removeWheelLogo() {
+  localStorage.removeItem('sw_wheel_logo');
+  wheelLogoImg = null;
+  document.getElementById('wheelLogoInput').value = '';
+  updateWheelLogoPreviewUI(null);
+  if(state.gameStarted) drawWheel(state.remaining); else drawWheel([]);
+  showToast('🗑️ Logo removed');
+}
+function loadWheelLogoFromStorage() {
+  const saved = localStorage.getItem('sw_wheel_logo');
+  if (saved) applyWheelLogo(saved);
+}
+
+// ==========================================
+//  SESSION STATE (survives refresh)
+// ==========================================
+const SESSION_KEY = 'sw_session_state';
+function saveSessionState() {
+  try {
+    const snap = {
+      mode: state.mode,
+      prize: state.prize,
+      maxWinners: state.maxWinners,
+      maxEntries: state.maxEntries,
+      countdownMins: state.countdownMins,
+      notes: state.notes,
+      entries: state.entries,
+      remaining: state.remaining,
+      winners: state.winners,
+      eliminated: state.eliminated,
+      gameStarted: state.gameStarted,
+      gameOver: state.gameOver,
+      setupConfirmed: state.setupConfirmed,
+      startTime: state.startTime,
+      entriesBoxValue: document.getElementById('entriesBox')?.value || '',
+      prizeNameValue: document.getElementById('prizeName')?.value || '',
+      maxWinnersValue: document.getElementById('maxWinners')?.value || '1',
+      maxEntriesValue: document.getElementById('maxEntries')?.value || '',
+      countdownMinsValue: document.getElementById('countdownMins')?.value || '',
+      notesValue: document.getElementById('streamerNotes')?.value || '',
+    };
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(snap));
+  } catch(e) {}
+}
+
+function restoreSessionState() {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    if (!raw) return;
+    const snap = JSON.parse(raw);
+    // Restore form values
+    if (snap.prizeNameValue) document.getElementById('prizeName').value = snap.prizeNameValue;
+    if (snap.maxWinnersValue) document.getElementById('maxWinners').value = snap.maxWinnersValue;
+    if (snap.maxEntriesValue) document.getElementById('maxEntries').value = snap.maxEntriesValue;
+    if (snap.countdownMinsValue) document.getElementById('countdownMins').value = snap.countdownMinsValue;
+    if (snap.notesValue) document.getElementById('streamerNotes').value = snap.notesValue;
+    selectMode(snap.mode || 'classic');
+    // Restore entries text
+    if (snap.entriesBoxValue) {
+      document.getElementById('entriesBox').value = snap.entriesBoxValue;
+      updateEntryCount(); updateEntriesIndicator();
+    }
+    // Restore state
+    if (snap.setupConfirmed) {
+      Object.assign(state, {
+        mode: snap.mode, prize: snap.prize, maxWinners: snap.maxWinners,
+        maxEntries: snap.maxEntries, countdownMins: snap.countdownMins,
+        notes: snap.notes, entries: snap.entries || [], remaining: snap.remaining || [],
+        winners: snap.winners || [], eliminated: snap.eliminated || [],
+        gameStarted: false, gameOver: false, setupConfirmed: true,
+        startTime: snap.startTime,
+      });
+      // Re-confirm setup UI
+      const modeLabels = { classic: '🎡 Classic', elimination: '💥 Elimination' };
+      document.getElementById('summaryPrize').textContent = '🏆 ' + snap.prize;
+      document.getElementById('summaryMode').textContent = modeLabels[snap.mode];
+      document.getElementById('summaryWinners').textContent = '👑 ' + snap.maxWinners;
+      const cd = snap.countdownMinsValue;
+      const cdChip = document.getElementById('summaryCountdown');
+      if (cd) { cdChip.textContent = '⏱️ ' + cd + 'm'; cdChip.style.display = 'flex'; } else { cdChip.style.display = 'none'; }
+      document.getElementById('setupBar').classList.add('collapsed');
+      document.getElementById('gamePhase2').style.display = 'grid';
+      syncSetupToggleBtn();
+      drawWheel(snap.remaining || []);
+      updateRemainingBadge();
+      updateGameStatusInfo();
+      // Restore winners and eliminated display
+      (snap.winners || []).forEach(w => {
+        const li = document.createElement('li'); li.className = 'winner-item';
+        li.innerHTML = `<span class="winner-rank">#${document.getElementById('winnersList').children.length+1}</span><span class="winner-name">${escHtml(w)}</span><span class="winner-prize">🏆 ${escHtml(snap.prize)}</span>`;
+        document.getElementById('winnersList').appendChild(li);
+      });
+      document.getElementById('winnerCountBadge').textContent = snap.winners?.length || 0;
+      if (snap.winners?.length) document.getElementById('copyWinnersWrap').style.display = 'block';
+      (snap.eliminated || []).forEach(e => {
+        const li = document.createElement('li'); li.className = 'elim-item';
+        li.innerHTML = `<span>❌</span> ${escHtml(e)}`;
+        document.getElementById('eliminatedList').appendChild(li);
+      });
+      document.getElementById('elimCountBadge').textContent = snap.eliminated?.length || 0;
+      updateEliminatedPanelVisibility();
+      if (snap.gameStarted && !snap.gameOver) showToast('↩️ Session restored after refresh!');
+    }
+  } catch(e) {}
+}
+
+// Session is saved inline at call sites — no function patching needed
+
+// ==========================================
+//  ONBOARDING
+// ==========================================
+function initOnboarding() {
+  const guide = document.getElementById('onboardingGuide');
+  if (!guide) return;
+  const done = localStorage.getItem('sw_first_setup_done');
+  guide.style.display = done ? 'none' : 'block';
+}
+function dismissOnboarding() {
+  localStorage.setItem('sw_first_setup_done', '1');
+  const guide = document.getElementById('onboardingGuide');
+  if (guide) { guide.style.transition = 'opacity 0.4s'; guide.style.opacity = '0'; setTimeout(() => guide.style.display = 'none', 400); }
+}
+
+// ==========================================
+//  ERROR HANDLING
+// ==========================================
+function showError(msg, duration = 5000) {
+  const existing = document.querySelector('.sw-error-banner');
+  if (existing) existing.remove();
+  const el = document.createElement('div');
+  el.className = 'sw-error-banner';
+  el.innerHTML = `<span>⚠️ ${escHtml(msg)}</span><button onclick="this.parentElement.remove()">✕</button>`;
+  document.body.appendChild(el);
+  if (duration > 0) setTimeout(() => el.remove(), duration);
+}
+// Global fallback
+window.addEventListener('error', e => {
+  if (e.message && !e.message.includes('ResizeObserver')) {
+    showError('Something went wrong — please refresh if the wheel stops responding.');
+  }
+});
+window.addEventListener('unhandledrejection', e => {
+  showError('A background action failed. Check your connection and try again.');
+});
+function quickFillEntries() {
+  if (state.gameStarted) { showToast('⚠️ Game in progress — reset first.'); return; }
+  const names = ['StreamerFan99','NightOwl42','PixelChaser','GamingGuru','LuckyViewer','WheelWatcher','ChatChamp','TopFragger','VibeCatcher','SpinToWin'];
+  document.getElementById('entriesBox').value = names.join('\n');
+  onEntriesInput();
+  showToast('⚡ 10 demo names added!');
+}
+
+// ==========================================
+//  CHAT COMMAND & XSEE SPACE LINK
+// ==========================================
+function saveChatCommand() {
+  const val = (document.getElementById('chatJoinCommand').value || '').trim();
+  localStorage.setItem('sw_chat_cmd', val);
+}
+function loadChatCommand() {
+  const el = document.getElementById('chatJoinCommand');
+  if (el) el.value = localStorage.getItem('sw_chat_cmd') || '';
+}
+function saveXseeSpaceLink() {
+  const val = (document.getElementById('xseeSpaceLink').value || '').trim();
+  localStorage.setItem('sw_xsee_link', val);
+}
+function loadXseeSpaceLink() {
+  const el = document.getElementById('xseeSpaceLink');
+  if (el) el.value = localStorage.getItem('sw_xsee_link') || '';
+}
+
+// ==========================================
+//  AUTO-CYCLE LOOP
+// ==========================================
+let cycleState = {
+  running: false, loopsDone: 0, maxLoops: 0,
+  waitTimer: null, waitPaused: false,
+  waitSecsLeft: 0, waitSecsTotal: 0,
+  waitIntervalId: null, pollId: null,
+  startedAt: null, prize: '', mode: ''
+};
+let cycleLog = JSON.parse(localStorage.getItem('sw_cycle_log') || '[]');
+
+function cycleBannerShow(show) {
+  const el = document.getElementById('cycleLiveBanner');
+  if (el) el.style.display = show ? 'block' : 'none';
+}
+
+function cycleBannerUpdate() {
+  const badge = document.getElementById('cycleLiveLoopBadge');
+  const status = document.getElementById('cycleLiveStatus');
+  if (badge) {
+    badge.textContent = cycleState.maxLoops > 0
+      ? `Round ${cycleState.loopsDone} / ${cycleState.maxLoops}`
+      : `Round #${cycleState.loopsDone}`;
+  }
+  if (status) status.textContent = cycleState.waitPaused ? '⏸ Wait paused' : '';
+}
+
+function cycleBannerSetWait(show, secsLeft, secsTotal) {
+  const wrap = document.getElementById('cycleWaitBarWrap');
+  const bar = document.getElementById('cycleWaitBar');
+  const cd = document.getElementById('cycleWaitCountdown');
+  const pauseBtn = document.getElementById('cyclePauseWaitBtn');
+  if (!wrap) return;
+  wrap.style.display = show ? 'flex' : 'none';
+  if (show) {
+    const pct = secsTotal > 0 ? Math.max(0, (secsLeft / secsTotal) * 100) : 0;
+    if (bar) bar.style.width = pct + '%';
+    if (cd) {
+      const m = Math.floor(secsLeft / 60), s = secsLeft % 60;
+      cd.textContent = m > 0 ? `${m}m ${s}s` : `${s}s`;
+    }
+  }
+  if (pauseBtn) pauseBtn.style.display = show ? '' : 'none';
+}
+
+function cyclePauseWait() {
+  const btn = document.getElementById('cyclePauseWaitBtn');
+  cycleState.waitPaused = !cycleState.waitPaused;
+  if (btn) btn.textContent = cycleState.waitPaused ? '▶ Resume wait' : '⏸ Pause wait';
+  cycleBannerUpdate();
+}
+
+function startAutoCycle() {
+  if (!state.setupConfirmed) { showToast('⚠️ Confirm game setup first (Game tab)'); return; }
+  const entries = getEntries();
+  if (entries.length < 2) { showToast('⚠️ Add at least 2 entries!'); return; }
+  const waitMins = parseFloat(document.getElementById('cycleWaitMins').value) || 5;
+  const loops = parseInt(document.getElementById('cycleLoopCount').value) || 0;
+  cycleState = {
+    running: true, loopsDone: 0, maxLoops: loops,
+    waitTimer: null, waitPaused: false,
+    waitSecsLeft: 0, waitSecsTotal: 0,
+    waitIntervalId: null, pollId: null,
+    startedAt: Date.now(),
+    prize: document.getElementById('prizeName').value.trim(),
+    mode: state.mode
+  };
+  document.getElementById('cycleStartBtn').style.display = 'none';
+  document.getElementById('cycleStopBtn').style.display = '';
+  cycleBannerShow(true);
+  cycleBannerUpdate();
+  showToast('🔁 Auto-Cycle started!');
+  cycleRunLoop(waitMins);
+}
+
+function stopAutoCycle(completed) {
+  const wasRunning = cycleState.running;
+  cycleState.running = false;
+  if (cycleState.waitIntervalId) { clearInterval(cycleState.waitIntervalId); cycleState.waitIntervalId = null; }
+  if (cycleState.waitTimer) { clearTimeout(cycleState.waitTimer); cycleState.waitTimer = null; }
+  if (cycleState.pollId) { clearInterval(cycleState.pollId); cycleState.pollId = null; }
+
+  // Log cycle summary
+  if (wasRunning && cycleState.loopsDone > 0) {
+    const summary = {
+      date: new Date().toLocaleString(),
+      prize: cycleState.prize,
+      mode: cycleState.mode,
+      rounds: cycleState.loopsDone,
+      maxRounds: cycleState.maxLoops,
+      completed: !!completed,
+      duration: Math.round((Date.now() - cycleState.startedAt) / 1000)
+    };
+    cycleLog.unshift(summary);
+    if (cycleLog.length > 100) cycleLog.length = 100;
+    localStorage.setItem('sw_cycle_log', JSON.stringify(cycleLog));
+    renderCycleLog();
+  }
+
+  cycleBannerShow(false);
+  cycleBannerSetWait(false, 0, 0);
+  const msg = document.getElementById('cycleStatusMsg');
+  if (msg) { msg.style.display = 'none'; msg.textContent = ''; }
+  const startBtn = document.getElementById('cycleStartBtn');
+  const stopBtn = document.getElementById('cycleStopBtn');
+  if (startBtn) startBtn.style.display = '';
+  if (stopBtn) stopBtn.style.display = 'none';
+  if (!completed) showToast('⏹ Auto-Cycle stopped');
+}
+
+function cycleSetStatus(txt) {
+  const msg = document.getElementById('cycleStatusMsg');
+  if (!msg) return;
+  msg.textContent = txt; msg.style.display = txt ? 'block' : 'none';
+}
+
+function cycleAutoCloseResult(afterMs, cb) {
+  // Auto-close the winner overlay after a delay when cycle is running
+  setTimeout(() => {
+    const overlay = document.getElementById('resultOverlay');
+    if (overlay && overlay.classList.contains('show')) {
+      overlay.classList.remove('show');
+      clearElimOverlayAutospin();
+    }
+    if (cb) cb();
+  }, afterMs);
+}
+
+function cycleRunLoop(waitMins) {
+  if (!cycleState.running) return;
+  if (cycleState.maxLoops > 0 && cycleState.loopsDone >= cycleState.maxLoops) {
+    stopAutoCycle(true);
+    showToast('🎉 Auto-Cycle complete!');
+    return;
+  }
+  cycleState.loopsDone++;
+  cycleBannerUpdate();
+
+  const loopLabel = cycleState.maxLoops > 0
+    ? `Round ${cycleState.loopsDone}/${cycleState.maxLoops}`
+    : `Round #${cycleState.loopsDone}`;
+
+  cycleSetStatus(`⏳ ${loopLabel} — entries open for ${waitMins}min`);
+
+  // Determine autoclear BEFORE touching anything
+  const autoclear = document.getElementById('cycleAutoclearEntries')?.checked ?? false;
+
+  // Silently reset game state — no tab switch, no toast, no entries wipe unless autoclear
+  if (state.gameStarted || state.gameOver) {
+    if (state.countdownTimer) { clearInterval(state.countdownTimer); state.countdownTimer = null; }
+    clearElimOverlayAutospin();
+    Object.assign(state, {
+      gameStarted: false, gameOver: false, spinning: false,
+      winners: [], eliminated: [], remaining: [],
+      autoChain: false, autoSpinPauseAfterThis: false
+    });
+    document.getElementById('spinBtn').disabled = true;
+    document.getElementById('countdownWrap').classList.remove('active');
+    document.getElementById('winnersList').innerHTML = '';
+    document.getElementById('eliminatedList').innerHTML = '';
+    document.getElementById('winnerCountBadge').textContent = '0';
+    document.getElementById('elimCountBadge').textContent = '0';
+    document.getElementById('remainingNum').textContent = '—';
+    document.getElementById('gameStatusInfo').textContent = '';
+    document.getElementById('copyWinnersWrap').style.display = 'none';
+    document.getElementById('maxEntriesWarning').style.display = 'none';
+    document.getElementById('startGameBtn').textContent = '🚀 Start Game!';
+    document.getElementById('pauseBtn').textContent = '⏸';
+    updateAutoSpinPauseButton();
+    drawWheel([]);
+  }
+
+  // Clear entries only if toggled on
+  if (autoclear) {
+    document.getElementById('entriesBox').value = '';
+    updateEntryCount(); updateEntriesIndicator();
+  }
+
+  // Keep entries editable during wait — viewers can join
+  document.getElementById('entriesBox').readOnly = false;
+  const waitLabel = waitMins >= 1 ? waitMins + 'min' : Math.round(waitMins * 60) + 's';
+  setStatus(`⏳ ${loopLabel} — add entries! Wheel spins in ${waitLabel}.`);
+
+  // Countdown bar
+  const cycleWaitSecs = Math.round(waitMins * 60);
+  const waitSecs = cycleWaitSecs;
+  cycleState.waitSecsLeft = waitSecs;
+  cycleState.waitSecsTotal = waitSecs;
+  cycleBannerSetWait(true, waitSecs, waitSecs);
+
+  if (cycleState.waitIntervalId) clearInterval(cycleState.waitIntervalId);
+  cycleState.waitIntervalId = setInterval(() => {
+    if (!cycleState.running) { clearInterval(cycleState.waitIntervalId); return; }
+    if (!cycleState.waitPaused) {
+      cycleState.waitSecsLeft = Math.max(0, cycleState.waitSecsLeft - 1);
+      cycleBannerSetWait(true, cycleState.waitSecsLeft, cycleState.waitSecsTotal);
+    }
+  }, 1000);
+
+  // After wait: lock entries and spin
+  cycleState.waitTimer = setTimeout(function fireAfterWait() {
+    if (!cycleState.running) return;
+    if (cycleState.waitPaused) {
+      cycleState.waitTimer = setTimeout(fireAfterWait, 500);
+      return;
+    }
+    clearInterval(cycleState.waitIntervalId);
+    cycleState.waitIntervalId = null;
+    cycleBannerSetWait(false, 0, 0);
+
+    const entries = getEntries();
+    if (entries.length < 2) {
+      cycleSetStatus(`⚠️ ${loopLabel} skipped — not enough entries.`);
+      showToast('⚠️ Skipped — add at least 2 entries next round!');
+      setTimeout(() => { if (cycleState.running) cycleRunLoop(waitMins); }, 3000);
+      return;
+    }
+
+    // Lock entries, build game state, spin
+    document.getElementById('entriesBox').readOnly = true;
+    cycleSetStatus(`🌀 ${loopLabel} — spinning!`);
+    setStatus(`🌀 ${loopLabel} — spinning!`);
+
+    state.prize = document.getElementById('prizeName').value.trim() || cycleState.prize;
+    state.maxWinners = parseInt(document.getElementById('maxWinners').value) || 1;
+    state.maxEntries = parseInt(document.getElementById('maxEntries').value) || null;
+    state.notes = document.getElementById('streamerNotes').value.trim();
+    state.entries = [...entries]; state.remaining = [...entries];
+    state.winners = []; state.eliminated = [];
+    state.gameStarted = true; state.gameOver = false; state.spinning = false;
+    state.startTime = Date.now(); state.autoChain = true; state.autoSpinPauseAfterThis = false;
+
+    document.getElementById('winnersList').innerHTML = '';
+    document.getElementById('eliminatedList').innerHTML = '';
+    document.getElementById('winnerCountBadge').textContent = '0';
+    document.getElementById('elimCountBadge').textContent = '0';
+    document.getElementById('copyWinnersWrap').style.display = 'none';
+    document.getElementById('startGameBtn').textContent = '🔄 Restart';
+    document.getElementById('spinBtn').disabled = false;
+    updateRemainingBadge(); updateGameStatusInfo(); drawWheel(entries);
+    updateAutoSpinPauseButton();
+
+    spinWheel(true);
+
+    if (cycleState.pollId) clearInterval(cycleState.pollId);
+    cycleState.pollId = setInterval(() => {
+      if (!cycleState.running) { clearInterval(cycleState.pollId); return; }
+      if (state.gameOver) {
+        clearInterval(cycleState.pollId);
+        cycleState.pollId = null;
+        cycleSetStatus(`✅ ${loopLabel} done — next round in 4s…`);
+        cycleAutoCloseResult(2500, () => {
+          if (cycleState.running) setTimeout(() => cycleRunLoop(waitMins), 1500);
+        });
+      }
+    }, 800);
+  }, waitSecs * 1000);
+}
+
+// ==========================================
+//  CYCLE LOG
+// ==========================================
+function renderCycleLog() {
+  const el = document.getElementById('cycleLogContainer'); if (!el) return;
+  if (!cycleLog.length) {
+    el.innerHTML = '<div class="log-empty">🔁 No cycles yet. Start an Auto-Loop Cycle in Settings to see history here.</div>';
+    return;
+  }
+  el.innerHTML = cycleLog.map((c, i) => {
+    const dur = c.duration >= 60 ? `${Math.floor(c.duration/60)}m ${c.duration%60}s` : `${c.duration}s`;
+    const modeColor = c.mode === 'classic' ? '#4d96ff' : '#ff6b6b';
+    return `
+      <div class="log-entry">
+        <div class="log-entry-header">
+          <div>
+            <span class="mode-tag" style="background:${modeColor}">${c.mode === 'classic' ? '🎡 Classic' : '💥 Elimination'}</span>
+            ${c.completed ? '<span class="mode-tag" style="background:var(--accent3);margin-left:4px">✅ Completed</span>' : '<span class="mode-tag" style="background:var(--accent5);margin-left:4px">⏹ Stopped</span>'}
+            <span class="log-entry-title" style="margin-left:8px">${escHtml(c.prize || '—')}</span>
+          </div>
+          <div class="log-meta"><span>📅 ${c.date}</span></div>
+        </div>
+        <div class="log-meta" style="margin-top:4px">
+          <span>🔄 ${c.rounds} round${c.rounds !== 1 ? 's' : ''} played${c.maxRounds > 0 ? ' / ' + c.maxRounds + ' planned' : ' (unlimited)'}</span>
+          <span>⏱ ${dur}</span>
+        </div>
+        <div style="margin-top:8px;display:flex;gap:6px">
+          <button class="btn btn-danger btn-xs" onclick="deleteCycleLogEntry(${i})">🗑️ Delete</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function deleteCycleLogEntry(idx) {
+  cycleLog.splice(idx, 1);
+  localStorage.setItem('sw_cycle_log', JSON.stringify(cycleLog));
+  renderCycleLog();
+}
+
+function clearCycleLog() {
+  cycleLog = [];
+  localStorage.setItem('sw_cycle_log', JSON.stringify(cycleLog));
+  renderCycleLog();
+  showToast('🗑️ Cycle log cleared!');
+}
+
+function exportCycleLogCSV() {
+  if (!cycleLog.length) { showToast('⚠️ No cycle history yet!'); return; }
+  const rows = [['Date','Prize','Mode','Rounds Played','Max Rounds','Completed','Duration (s)']];
+  cycleLog.forEach(c => rows.push([c.date, c.prize, c.mode, c.rounds, c.maxRounds || 'unlimited', c.completed ? 'Yes' : 'No', c.duration]));
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+  a.download = 'StreamWheel_CycleLog.csv'; a.click();
+  showToast('📤 Cycle log exported!');
 }
 
 // ==========================================

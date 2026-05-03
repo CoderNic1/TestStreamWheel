@@ -4,6 +4,31 @@
 // * dot 
 // ++ new line ++
 
+
+++ new line ++
+
+# ⭐ V1.2 - **QOL update**
+date: 01/05/2026
+
+** Quality of life update focussed on a few small new features and changes**
+** New features**
+
+* Pre-fill the list of entries with 10 funny NPC names
+* Add **autocycle** feature, this system is provided to let the game run without any further input from the streamer needed, set amount of rounds and time per round and the system runs for you. (further tweaks/evaluation is taking place).
+* add cycle log wich gives information about your post cycles
+* add custom wheel logo option, upload your logo and show it on the wheel while streaming, possible fixes/changes needed for how big
+* add 4-step based tutorial
+* status save, if you now refresh the page by accident it will go back to your last saved status, after closing the tab its reset (autosaves)
+
+** Changes **
+
+* Instead of the option to upload only 1 music file you can now upload multiple and manage the playlist
+* removed the ad api fetch system, there is no usecase to support external ad support, local ad system stays available and free to use
+* removed the custom database key function, future database will be stored by ourself. (premium function)
+
+** Bug fixes **
+* No new fixes currently
+
 ++ new line ++
  
 # 🎡 V1.1 — introducing the landing page
