@@ -1215,7 +1215,184 @@ body {
 
 #sw-landing-root.sw-landing-hidden { display: none !important; pointer-events: none; }
 
+/* ===== FIREBASE AUTH UI ===== */
+.fb-status-bar {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: rgba(107,203,119,0.12);
+  border: 1.5px solid var(--accent3);
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--accent3);
+  margin-bottom: 12px;
+}
+.fb-status-bar.show { display: flex; }
+.fb-status-bar.vip { background: rgba(245,166,35,0.12); border-color: var(--gold); color: var(--gold); }
+.fb-status-bar .fb-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex-shrink: 0; animation: fb-pulse 2s ease infinite; }
+@keyframes fb-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.lb-sync-btn {
+  background: linear-gradient(135deg,#f5a623,#ffdc5e);
+  color: #1a0a00;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 7px 14px;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 0.82rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+.lb-sync-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 12px rgba(245,166,35,0.4); }
+.lb-sync-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.lb-cloud-badge {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--gold);
+  background: rgba(245,166,35,0.1);
+  border: 1px solid rgba(245,166,35,0.3);
+  border-radius: 12px;
+  padding: 2px 9px;
+  margin-left: 6px;
+}
+.lb-cloud-badge.show { display: inline-flex; }
+/* ===== AUTH TABS ===== */
+.sw-auth-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 22px;
+}
+.sw-auth-tab {
+  flex: 1;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: var(--text3);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+}
+.sw-auth-tab.active {
+  color: var(--accent6);
+  border-bottom-color: var(--accent6);
+}
+.sw-auth-tab:hover:not(.active) { color: var(--text2); }
+
+/* ===== OFFLINE / FALLBACK BANNER ===== */
+.sw-offline-banner {
+  display: none;
+  position: fixed;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a1a2e;
+  border: 2px solid #f5a623;
+  border-radius: 14px;
+  padding: 12px 18px 12px 14px;
+  max-width: 420px;
+  width: calc(100% - 32px);
+  z-index: 9990;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.5);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #e0d5b0;
+  gap: 10px;
+  align-items: flex-start;
+  animation: toast-in 0.3s ease;
+}
+.sw-offline-banner.show { display: flex; }
+.sw-offline-banner-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+.sw-offline-banner-body { flex: 1; line-height: 1.55; }
+.sw-offline-banner-title { color: #f5a623; font-weight: 900; font-size: 0.9rem; margin-bottom: 3px; }
+.sw-offline-banner-close { background: none; border: none; color: #a0a0c0; cursor: pointer; font-size: 1rem; padding: 0 0 0 8px; flex-shrink: 0; }
+
+/* ===== DELETE ACCOUNT MODAL ===== */
+.sw-delete-account-warn {
+  background: rgba(255,45,45,0.08);
+  border: 1.5px solid rgba(255,45,45,0.3);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
 </style>
+
+<!-- Firebase SDK (modular v10) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+    signOut, onAuthStateChanged, deleteUser, reauthenticateWithCredential, EmailAuthProvider }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, deleteDoc, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC9ntqMcWAeW1e0UMafiFv59Ez4GnyWwjA",
+    authDomain: "streamwheel-a9b07.firebaseapp.com",
+    projectId: "streamwheel-a9b07",
+    storageBucket: "streamwheel-a9b07.firebasestorage.app",
+    messagingSenderId: "273242276635",
+    appId: "1:273242276635:web:d6de4c21292fc7295b09be"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Expose to global scope
+  window._swFirebase = {
+    auth, db,
+    signInWithEmailAndPassword, createUserWithEmailAndPassword,
+    signOut, onAuthStateChanged, deleteUser,
+    reauthenticateWithCredential, EmailAuthProvider,
+    doc, getDoc, setDoc, deleteDoc, serverTimestamp
+  };
+
+  // ── Auth state observer ──
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      try {
+        const snap = await getDoc(doc(db, 'hosts', user.uid));
+        const data = snap.exists() ? snap.data() : {};
+        const isPremium = data.isPremium === true;
+        const username = data.username || '';
+        // Store cloud lastLogin timestamp (ms) for comparison
+        const cloudLastLogin = data.lastLogin ? data.lastLogin.toMillis() : 0;
+        window._swCurrentUser = { uid: user.uid, username, isPremium, cloudLastLogin };
+        // Update lastLogin on server
+        await setDoc(doc(db, 'hosts', user.uid), { lastLogin: serverTimestamp() }, { merge: true });
+        if (isPremium) {
+          await window._swLoadLeaderboardFromCloud(cloudLastLogin);
+        }
+      } catch (e) {
+        // Firebase unreachable — use localStorage fallback
+        window._swCurrentUser = { uid: user.uid, username: localStorage.getItem('sw_username') || '', isPremium: false, cloudLastLogin: 0 };
+        window._swShowOfflineBanner();
+      }
+      window._swUpdateAuthUI();
+    } else {
+      window._swCurrentUser = null;
+      window._swUpdateAuthUI();
+    }
+  });
+</script>
+
 </head>
 <body>
 
@@ -1272,37 +1449,75 @@ body {
 <!-- ===== LOGIN ===== -->
 <section class="login-section" id="loginSection">
   <div class="login-card">
-    <div class="login-title">Welcome Back 👋</div>
-    <div class="login-sub">Sign in to access your StreamWheel dashboard</div>
 
-    <button type="button" class="btn-social" onclick="swlLoginWith('Twitter/X')">
-      <span style="font-size:1.1rem">𝕏</span> Continue with Twitter / X
-    </button>
-    <button type="button" class="btn-social" onclick="swlLoginWith('Discord')">
-      <span style="font-size:1.1rem">🎮</span> Continue with Discord
-    </button>
-    <button type="button" class="btn-social" onclick="swlLoginWith('Twitch')">
-      <span style="font-size:1.1rem">💜</span> Continue with Twitch
-    </button>
-
-    <div class="login-divider">or use email</div>
-
-    <div class="form-field">
-      <label>📧 Email Address</label>
-      <input type="email" id="loginEmail" placeholder="you@example.com" />
-    </div>
-    <div class="form-field">
-      <label>🔒 Password</label>
-      <input type="password" id="loginPassword" placeholder="••••••••" />
+    <!-- Tab switcher -->
+    <div class="sw-auth-tabs">
+      <button type="button" class="sw-auth-tab active" id="swTabSignin" onclick="swlSwitchAuthTab('signin')">Sign In</button>
+      <button type="button" class="sw-auth-tab" id="swTabRegister" onclick="swlSwitchAuthTab('register')">Create Account</button>
     </div>
 
-    <button type="button" class="btn-login" onclick="swlLoginWithEmail()">Sign In →</button>
+    <!-- ── SIGN IN PANEL ── -->
+    <div id="swPanelSignin">
+      <div class="login-title" style="font-size:1.5rem;margin-bottom:4px">Welcome Back 👋</div>
+      <div class="login-sub">Sign in with your StreamWheel username</div>
 
-    <div class="login-footer-text">
-      Don't have an account? <a href="#" onclick="swlShowRegister();return false;">Create one free</a>
-      &nbsp;·&nbsp;
-      <a href="#" onclick="swlShowForgot();return false;">Forgot password?</a>
+      <div class="form-field">
+        <label>👤 Username</label>
+        <input type="text" id="loginUsername" placeholder="your_username" autocomplete="username" />
+      </div>
+      <div class="form-field">
+        <label>🔒 Password</label>
+        <div style="position:relative">
+          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" style="padding-right:42px" />
+          <button type="button" onclick="swlTogglePw('loginPassword',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;color:var(--text2)" title="Show/hide">👁</button>
+        </div>
+      </div>
+
+      <button type="button" class="btn-login" onclick="swlLoginWithUsername()">Sign In →</button>
+
+      <div class="login-footer-text" style="margin-top:14px">
+        Forgot your password?
+        <a href="https://discord.gg/DhDzyC94mV" target="_blank" rel="noopener noreferrer" id="swForgotDiscordLink">Open a support ticket on Discord →</a>
+      </div>
     </div>
+
+    <!-- ── REGISTER PANEL ── -->
+    <div id="swPanelRegister" style="display:none">
+      <div class="login-title" style="font-size:1.5rem;margin-bottom:4px">Create Account 🎉</div>
+      <div class="login-sub">No email needed — just a username &amp; password</div>
+
+      <!-- Xsee tip banner -->
+      <div style="display:flex;align-items:flex-start;gap:10px;background:rgba(77,150,255,0.1);border:1.5px solid rgba(77,150,255,0.35);border-radius:10px;padding:10px 14px;margin-bottom:18px;font-size:0.8rem;font-weight:700;color:var(--text2);line-height:1.5">
+        <span style="font-size:1.1rem;flex-shrink:0">💡</span>
+        <span>We recommend using the <strong style="color:var(--text)">same username as on Xsee</strong> so your identity stays consistent across platforms.</span>
+      </div>
+
+      <div class="form-field">
+        <label>👤 Username <span style="font-weight:500;font-size:0.75rem;color:var(--text3)">(3–30 chars, letters/numbers/_)</span></label>
+        <input type="text" id="regUsername" placeholder="your_xsee_username" autocomplete="username" oninput="swlValidateRegUsername(this)" />
+        <div id="regUsernameHint" style="font-size:0.72rem;font-weight:700;margin-top:3px;display:none"></div>
+      </div>
+      <div class="form-field">
+        <label>🔒 Password <span style="font-weight:500;font-size:0.75rem;color:var(--text3)">(min 8 chars)</span></label>
+        <div style="position:relative">
+          <input type="password" id="regPassword" placeholder="Choose a strong password" autocomplete="new-password" style="padding-right:42px" oninput="swlCheckPwStrength(this.value)" />
+          <button type="button" onclick="swlTogglePw('regPassword',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;color:var(--text2)" title="Show/hide">👁</button>
+        </div>
+        <div id="regPwStrength" style="height:4px;border-radius:4px;margin-top:5px;background:var(--border);overflow:hidden"><div id="regPwStrengthBar" style="height:100%;width:0;transition:width 0.3s,background 0.3s;border-radius:4px"></div></div>
+        <div id="regPwStrengthLabel" style="font-size:0.7rem;font-weight:800;margin-top:3px;color:var(--text3)"></div>
+      </div>
+      <div class="form-field">
+        <label>🔒 Confirm Password</label>
+        <input type="password" id="regPasswordConfirm" placeholder="Repeat your password" autocomplete="new-password" />
+      </div>
+
+      <button type="button" class="btn-login" onclick="swlRegisterUser()">Create Account →</button>
+
+      <div class="login-footer-text" style="margin-top:12px;font-size:0.74rem">
+        By creating an account you agree that no sensitive personal data is stored — only your username and a securely hashed password.
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -1342,6 +1557,41 @@ body {
       <div class="swl-modal-loading"><div class="spinner"></div>Loading…</div>
     </div>
   </div>
+</div>
+
+<!-- ===== DELETE ACCOUNT MODAL ===== -->
+<div class="swl-modal-backdrop" id="deleteAccountModal">
+  <div class="swl-modal-box" style="max-width:440px">
+    <div class="swl-modal-header">
+      <div class="swl-modal-title" style="color:#ff4444">⚠️ Delete Account</div>
+      <button type="button" class="swl-modal-close-btn" onclick="swlCloseModal('deleteAccountModal')">✕</button>
+    </div>
+    <div class="swl-modal-body">
+      <div class="sw-delete-account-warn">
+        This will <strong>permanently delete</strong> your StreamWheel account, all cloud data (leaderboard, profile), and sign you out.<br><br>
+        Your <strong>local browser data</strong> (log, settings, offline leaderboard) is not deleted automatically — use <em>Clear ALL Data</em> if you want that too.<br><br>
+        <strong>This cannot be undone.</strong>
+      </div>
+      <div class="form-field">
+        <label style="color:var(--text2);font-size:0.8rem;font-weight:800">🔒 Confirm your password to proceed</label>
+        <input type="password" id="deleteAccountPassword" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <div style="display:flex;gap:10px;margin-top:6px">
+        <button type="button" class="btn btn-danger btn-sm" style="flex:1" onclick="swDeleteAccount()">🗑️ Yes, delete my account</button>
+        <button type="button" class="btn btn-secondary btn-sm" style="flex:1" onclick="swlCloseModal('deleteAccountModal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== OFFLINE / FALLBACK BANNER ===== -->
+<div class="sw-offline-banner" id="swOfflineBanner">
+  <span class="sw-offline-banner-icon">🔒</span>
+  <div class="sw-offline-banner-body">
+    <div class="sw-offline-banner-title">Cloud unreachable — using local data</div>
+    <span id="swOfflineBannerMsg">StreamWheel couldn't reach the cloud database. Your local data is still intact and will sync automatically when the connection is restored.</span>
+  </div>
+  <button type="button" class="sw-offline-banner-close" onclick="document.getElementById('swOfflineBanner').classList.remove('show')" title="Dismiss">✕</button>
 </div>
 </div>
 
@@ -1641,9 +1891,20 @@ body {
 <!-- ===== LEADERBOARD PAGE ===== -->
 <section class="page" id="page-leaderboard">
   <div class="tab-page-scroll">
+  <!-- Cloud status bar (visible when logged in as premium) -->
+  <div class="fb-status-bar vip" id="lbCloudStatusBar">
+    <div class="fb-dot"></div>
+    <span id="lbCloudStatusText">☁️ Cloud Leaderboard — Premium Active</span>
+    <span id="lbLastSyncedText" style="margin-left:auto;font-size:0.7rem;opacity:0.8;font-weight:600"></span>
+  </div>
+
   <div class="lb-header-row">
     <div style="font-family:var(--font-display);font-size:1.4rem;color:var(--text)">🏅 Leaderboard</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <!-- Cloud sync button — only shown for premium users -->
+      <button class="lb-sync-btn" id="lbSyncBtn" onclick="swSyncLeaderboardToCloud()" style="display:none" title="Sync leaderboard to cloud">
+        ☁️ Sync to Cloud
+      </button>
       <button class="btn btn-secondary btn-sm" onclick="exportLbCSV()">📤 Export CSV</button>
       <button class="btn btn-danger btn-sm" onclick="clearLeaderboard()">🗑️ Reset Board</button>
     </div>
@@ -1801,8 +2062,16 @@ body {
       <!-- Session -->
       <div class="panel" style="margin-bottom:16px">
         <div class="panel-title">🚪 Session</div>
+        <!-- Firebase auth status -->
+        <div class="fb-status-bar" id="settingsAuthStatus">
+          <div class="fb-dot"></div>
+          <span id="settingsAuthText">Not signed in</span>
+        </div>
         <p style="font-size:0.8rem;color:var(--text2);font-weight:600;margin-bottom:10px">Return to the welcome screen. Data stays in this browser until you clear site data.</p>
-        <button type="button" class="btn btn-secondary btn-sm" onclick="swlLogoutToLanding()">Log out</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="swlLogoutToLanding()">Log out</button>
+          <button type="button" class="btn btn-danger btn-sm" id="settingsFirebaseSignOutBtn" style="display:none" onclick="swFirebaseSignOut()">🔓 Sign out of Cloud</button>
+        </div>
       </div>
     </div>
 
@@ -1978,6 +2247,14 @@ body {
           <button class="btn btn-danger btn-sm" onclick="clearAllData()">🗑️ Clear ALL Data (log, leaderboard, settings)</button>
           <button class="btn btn-secondary btn-sm" onclick="clearLog()">📋 Clear Game Log Only</button>
           <button class="btn btn-secondary btn-sm" onclick="clearLeaderboard()">🏅 Reset Leaderboard Only</button>
+          <!-- Delete account — only shown when signed in -->
+          <div id="deleteAccountSection" style="display:none;border-top:1px dashed rgba(255,45,45,0.3);padding-top:10px;margin-top:4px">
+            <div style="font-size:0.75rem;font-weight:700;color:var(--text2);margin-bottom:8px;line-height:1.5">
+              🔥 <strong>Account deletion</strong> removes your cloud profile + leaderboard from Firebase and signs you out.
+              Local browser data (log, settings) is <em>not</em> removed — use Clear ALL Data above for that.
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="swlOpenModal('deleteAccountModal')">🗑️ Delete My Account &amp; Cloud Data</button>
+          </div>
         </div>
       </div>
     </div>
@@ -3113,7 +3390,11 @@ function clearLeaderboard() {
   leaderboard = [];
   localStorage.setItem('sw_lb', JSON.stringify(leaderboard));
   renderLeaderboard(); updateLbPreview();
-  showToast('🗑️ Leaderboard cleared!');
+  // Auto-sync to cloud if premium (treat clearing as a write event)
+  if (window._swCurrentUser && window._swCurrentUser.isPremium) {
+    window.swSyncLeaderboardToCloud(true);
+  }
+  showToast('\uD83D\uDDD1\uFE0F Leaderboard cleared!');
 }
 
 function exportLbCSV() {
@@ -4132,26 +4413,342 @@ function escHtml(s) {
     showToast('\uD83D\uDD0C ' + provider + ' login coming soon!');
   };
 
-  window.swlLoginWithEmail = function () {
-    var email = document.getElementById('loginEmail').value.trim();
-    var pass = document.getElementById('loginPassword').value;
-    if (!email || !pass) {
-      showToast('\u26A0\uFE0F Enter email and password');
+  // ── Firebase helpers ──
+  function _fb() { return window._swFirebase || null; }
+
+  // ── Username → internal email (Firebase Auth requires email format) ──
+  function _usernameToEmail(username) {
+    return username.trim().toLowerCase() + '@streamwheel.local';
+  }
+
+  // ── Auth tab switch ──
+  window.swlSwitchAuthTab = function(tab) {
+    document.getElementById('swPanelSignin').style.display = tab === 'signin' ? '' : 'none';
+    document.getElementById('swPanelRegister').style.display = tab === 'register' ? '' : 'none';
+    document.getElementById('swTabSignin').classList.toggle('active', tab === 'signin');
+    document.getElementById('swTabRegister').classList.toggle('active', tab === 'register');
+    // Apply discord link from config
+    var discordLink = document.getElementById('swForgotDiscordLink');
+    if (discordLink && SWL_CONFIG.discordUrl) discordLink.href = SWL_CONFIG.discordUrl;
+  };
+
+  // ── Show/hide password toggle ──
+  window.swlTogglePw = function(inputId, btn) {
+    var inp = document.getElementById(inputId);
+    if (!inp) return;
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'password' ? '\uD83D\uDC41' : '\uD83D\uDD12';
+  };
+
+  // ── Username validation ──
+  window.swlValidateRegUsername = function(inp) {
+    var val = inp.value;
+    var hint = document.getElementById('regUsernameHint');
+    if (!hint) return;
+    var ok = /^[a-zA-Z0-9_]{3,30}$/.test(val);
+    hint.style.display = val.length > 0 ? 'block' : 'none';
+    hint.style.color = ok ? 'var(--accent3)' : 'var(--accent1)';
+    hint.textContent = ok
+      ? '\u2705 Looks good!'
+      : val.length < 3 ? '\u26A0\uFE0F At least 3 characters'
+      : val.length > 30 ? '\u26A0\uFE0F Max 30 characters'
+      : '\u26A0\uFE0F Only letters, numbers and _ allowed';
+    return ok;
+  };
+
+  // ── Password strength meter ──
+  window.swlCheckPwStrength = function(pw) {
+    var bar = document.getElementById('regPwStrengthBar');
+    var label = document.getElementById('regPwStrengthLabel');
+    if (!bar || !label) return;
+    var score = 0;
+    if (pw.length >= 8) score++;
+    if (pw.length >= 12) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^a-zA-Z0-9]/.test(pw)) score++;
+    var levels = [
+      { w:'0%', c:'transparent', l:'' },
+      { w:'25%', c:'#ff4444', l:'\uD83D\uDD34 Very weak' },
+      { w:'50%', c:'#ff922b', l:'\uD83D\uDFE0 Weak' },
+      { w:'75%', c:'#ffd93d', l:'\uD83D\uDFE1 Fair' },
+      { w:'90%', c:'#6bcb77', l:'\uD83D\uDFE2 Strong' },
+      { w:'100%', c:'#4d96ff', l:'\uD83D\uDD35 Very strong' }
+    ];
+    var lvl = levels[Math.min(score, 5)];
+    bar.style.width = lvl.w; bar.style.background = lvl.c; label.textContent = lvl.l;
+  };
+
+  // ── SIGN IN with username ──
+  window.swlLoginWithUsername = async function() {
+    var username = (document.getElementById('loginUsername') || {}).value || '';
+    var pass = (document.getElementById('loginPassword') || {}).value || '';
+    username = username.trim();
+    if (!username || !pass) { showToast('\u26A0\uFE0F Enter your username and password'); return; }
+    if (!/^[a-zA-Z0-9_]{3,30}$/.test(username)) { showToast('\u26A0\uFE0F Invalid username format'); return; }
+    var fb = _fb();
+    if (!fb) { showToast('\u26A0\uFE0F Still loading — please wait a moment'); return; }
+    try {
+      showToast('\uD83D\uDD04 Signing in\u2026');
+      await fb.signInWithEmailAndPassword(fb.auth, _usernameToEmail(username), pass);
+      localStorage.setItem('sw_username', username);
+      showToast('\u2705 Welcome back, ' + username + '!');
+      setTimeout(swlEnterApp, 800);
+    } catch (err) {
+      var code = err.code || '';
+      var msg = (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found')
+        ? '\u274C Wrong username or password'
+        : code === 'auth/too-many-requests'
+        ? '\u274C Too many attempts — please wait a moment'
+        : '\u274C Sign-in failed (' + code + ')';
+      showToast(msg);
+    }
+  };
+
+  // ── Legacy alias used by old button if any ──
+  window.swlLoginWithEmail = window.swlLoginWithUsername;
+
+  // ── REGISTER new user ──
+  window.swlRegisterUser = async function() {
+    var username = (document.getElementById('regUsername') || {}).value || '';
+    var pass = (document.getElementById('regPassword') || {}).value || '';
+    var passConfirm = (document.getElementById('regPasswordConfirm') || {}).value || '';
+    username = username.trim();
+    if (!window.swlValidateRegUsername({ value: username })) { showToast('\u26A0\uFE0F Fix your username first'); return; }
+    if (pass.length < 8) { showToast('\u26A0\uFE0F Password must be at least 8 characters'); return; }
+    if (pass !== passConfirm) { showToast('\u26A0\uFE0F Passwords do not match'); return; }
+    var fb = _fb();
+    if (!fb) { showToast('\u26A0\uFE0F Still loading — please wait a moment'); return; }
+    try {
+      showToast('\uD83D\uDD04 Creating account\u2026');
+      var cred = await fb.createUserWithEmailAndPassword(fb.auth, _usernameToEmail(username), pass);
+      await fb.setDoc(fb.doc(fb.db, 'hosts', cred.user.uid), {
+        username: username,
+        passwordHash: '',        // Firebase Auth handles hashing — this is just a placeholder field
+        registrationDate: fb.serverTimestamp(),
+        lastLogin: fb.serverTimestamp(),
+        isPremium: false
+      });
+      localStorage.setItem('sw_username', username);
+      showToast('\uD83C\uDF89 Account created! Welcome, ' + username + '!');
+      setTimeout(swlEnterApp, 900);
+    } catch (err) {
+      var code = err.code || '';
+      var msg = code === 'auth/email-already-in-use'
+        ? '\u274C That username is already taken — choose another'
+        : code === 'auth/weak-password'
+        ? '\u274C Password is too weak — add more characters'
+        : '\u274C Registration failed (' + code + ')';
+      showToast(msg);
+    }
+  };
+
+  // ── Forgot password — redirect to Discord ──
+  window.swlShowForgot = function() {
+    var url = SWL_CONFIG.discordUrl || 'https://discord.gg/DhDzyC94mV';
+    showToast('\uD83D\uDCAC Opening Discord support\u2026');
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
+  // ── Offline / fallback banner ──
+  window._swShowOfflineBanner = function(msg) {
+    var banner = document.getElementById('swOfflineBanner');
+    var msgEl = document.getElementById('swOfflineBannerMsg');
+    if (msgEl && msg) msgEl.textContent = msg;
+    if (banner) banner.classList.add('show');
+    // Auto-hide after 14 seconds
+    setTimeout(function() { if (banner) banner.classList.remove('show'); }, 14000);
+  };
+
+  // ── Cloud sign out ──
+  window.swFirebaseSignOut = async function() {
+    var fb = _fb();
+    if (!fb) return;
+    try {
+      await fb.signOut(fb.auth);
+      showToast('\uD83D\uDD13 Signed out of cloud');
+      window._swCurrentUser = null;
+      window._swUpdateAuthUI();
+    } catch (e) { showToast('\u26A0\uFE0F Sign out failed'); }
+  };
+
+  // ── Delete account + all cloud data ──
+  window.swDeleteAccount = async function() {
+    var pw = (document.getElementById('deleteAccountPassword') || {}).value || '';
+    if (!pw) { showToast('\u26A0\uFE0F Enter your password to confirm'); return; }
+    var fb = _fb();
+    var user = fb && fb.auth.currentUser;
+    var swUser = window._swCurrentUser;
+    if (!user || !swUser) { showToast('\u26A0\uFE0F Not signed in'); return; }
+    if (!confirm('Last chance — this permanently deletes your account and all cloud data. Are you sure?')) return;
+    try {
+      showToast('\uD83D\uDD04 Deleting account\u2026');
+      // Re-authenticate before deleting (Firebase security requirement)
+      var credential = fb.EmailAuthProvider.credential(_usernameToEmail(swUser.username || localStorage.getItem('sw_username') || ''), pw);
+      await fb.reauthenticateWithCredential(user, credential);
+      // Delete Firestore data first
+      try { await fb.deleteDoc(fb.doc(fb.db, 'leaderboards', user.uid)); } catch(e) {}
+      try { await fb.deleteDoc(fb.doc(fb.db, 'hosts', user.uid)); } catch(e) {}
+      // Delete Firebase Auth account
+      await fb.deleteUser(user);
+      window._swCurrentUser = null;
+      window._swUpdateAuthUI();
+      swlCloseModal('deleteAccountModal');
+      showToast('\uD83D\uDDD1\uFE0F Account and cloud data deleted.');
+      setTimeout(swlLogoutToLanding, 1200);
+    } catch(err) {
+      var code = err.code || '';
+      var msg = code === 'auth/wrong-password' || code === 'auth/invalid-credential'
+        ? '\u274C Wrong password — account not deleted'
+        : '\u274C Deletion failed: ' + code;
+      showToast(msg);
+    }
+  };
+
+  // ── Update all auth-related UI elements ──
+  window._swUpdateAuthUI = function() {
+    var user = window._swCurrentUser;
+    var isPremium = user && user.isPremium;
+    var username = user ? (user.username || localStorage.getItem('sw_username') || '') : '';
+
+    // Settings session panel
+    var statusBar = document.getElementById('settingsAuthStatus');
+    var statusText = document.getElementById('settingsAuthText');
+    var signOutBtn = document.getElementById('settingsFirebaseSignOutBtn');
+    var deleteSection = document.getElementById('deleteAccountSection');
+    if (statusBar && statusText) {
+      if (user) {
+        statusBar.classList.add('show');
+        statusBar.classList.toggle('vip', isPremium);
+        statusText.textContent = isPremium
+          ? '\u2B50 Premium — @' + username
+          : '\u2705 Signed in — @' + username;
+      } else {
+        statusBar.classList.remove('show');
+      }
+    }
+    if (signOutBtn) signOutBtn.style.display = user ? 'inline-flex' : 'none';
+    if (deleteSection) deleteSection.style.display = user ? 'block' : 'none';
+
+    // Leaderboard sync button + cloud status bar
+    var syncBtn = document.getElementById('lbSyncBtn');
+    var cloudBar = document.getElementById('lbCloudStatusBar');
+    var cloudText = document.getElementById('lbCloudStatusText');
+    if (syncBtn) syncBtn.style.display = isPremium ? 'flex' : 'none';
+    if (cloudBar) cloudBar.classList.toggle('show', !!isPremium);
+    if (cloudText && isPremium) cloudText.textContent = '\u2601\uFE0F Cloud Leaderboard — Premium Active (' + username + ')';
+  };
+
+  // ── Load leaderboard from Firestore → localStorage, with timestamp safety ──
+  window._swLoadLeaderboardFromCloud = async function(cloudLastLoginMs) {
+    var user = window._swCurrentUser;
+    if (!user || !user.isPremium) return;
+    var fb = _fb();
+    if (!fb) return;
+    try {
+      var snap = await fb.getDoc(fb.doc(fb.db, 'leaderboards', user.uid));
+      if (!snap.exists()) return;
+      var data = snap.data();
+      // ── Timestamp comparison ──
+      // Compare cloud's lastSynced vs local sw_lb_last_sync to pick newer data
+      var cloudSyncMs = data.lastSynced ? data.lastSynced.toMillis() : 0;
+      var localSyncStr = localStorage.getItem('sw_lb_last_sync');
+      var localSyncMs = localSyncStr ? new Date(localSyncStr).getTime() : 0;
+      var localLb = JSON.parse(localStorage.getItem('sw_lb') || '[]');
+      var localHasData = localLb.length > 0;
+
+      if (localHasData && localSyncMs > cloudSyncMs) {
+        // Local data is newer — warn user and keep local
+        window._swShowOfflineBanner(
+          '\uD83D\uDCBE Your local leaderboard is newer than the cloud copy (last synced locally: '
+          + new Date(localSyncMs).toLocaleString()
+          + '). Local data was kept. Hit \u2601\uFE0F Sync to Cloud to push it up.'
+        );
+        showToast('\uD83D\uDCBE Local leaderboard is newer — kept local data.');
+        return;
+      }
+
+      // Cloud is same age or newer — load it
+      var players = data.players || [];
+      var lb = players.map(function(p) {
+        return { name: p.username, wins: p.wins || 0, points: p.points || 0 };
+      });
+      lb.sort(function(a,b) { return b.points - a.points; });
+      localStorage.setItem('sw_lb', JSON.stringify(lb));
+      localStorage.setItem('sw_lb_last_sync', new Date(cloudSyncMs).toLocaleString());
+
+      if (typeof leaderboard !== 'undefined') {
+        leaderboard.length = 0;
+        lb.forEach(function(e) { leaderboard.push(e); });
+        if (typeof renderLeaderboard === 'function') renderLeaderboard();
+        if (typeof updateLbPreview === 'function') updateLbPreview();
+      }
+      var lastSyncEl = document.getElementById('lbLastSyncedText');
+      if (lastSyncEl && data.lastSynced && data.lastSynced.toDate) {
+        lastSyncEl.textContent = 'Last synced: ' + data.lastSynced.toDate().toLocaleString();
+      }
+      showToast('\u2601\uFE0F Cloud leaderboard loaded!');
+    } catch (e) {
+      // Firebase quota or network error — fall back to localStorage silently
+      var localLbFallback = JSON.parse(localStorage.getItem('sw_lb') || '[]');
+      if (localLbFallback.length > 0) {
+        window._swShowOfflineBanner(
+          'Cloud database is temporarily unreachable. Your local leaderboard ('
+          + localLbFallback.length + ' players) is still available and will sync when the connection is restored.'
+        );
+      } else {
+        window._swShowOfflineBanner();
+      }
+      console.warn('[StreamWheel] Cloud LB fetch failed:', e.code || e.message);
+    }
+  };
+
+  // ── Push leaderboard to Firestore (premium only) ──
+  window.swSyncLeaderboardToCloud = async function(silent) {
+    var user = window._swCurrentUser;
+    if (!user || !user.isPremium) {
+      if (!silent) showToast('\u26A0\uFE0F Cloud sync requires a Premium account');
       return;
     }
-    showToast('\uD83D\uDD0C Email auth coming soon! Opening the wheel…');
-    setTimeout(function () {
-      swlEnterApp();
-    }, 900);
+    var fb = _fb();
+    if (!fb) { if (!silent) showToast('\u26A0\uFE0F Firebase not ready'); return; }
+    var btn = document.getElementById('lbSyncBtn');
+    try {
+      if (!silent && btn) { btn.disabled = true; btn.textContent = '\u23F3 Syncing\u2026'; }
+      var raw = JSON.parse(localStorage.getItem('sw_lb') || '[]');
+      var players = raw.map(function(e) {
+        return { username: e.name, points: e.points || 0, wins: e.wins || 0, lastUpdated: fb.serverTimestamp() };
+      });
+      await fb.setDoc(fb.doc(fb.db, 'leaderboards', user.uid), {
+        players: players,
+        lastSynced: fb.serverTimestamp()
+      });
+      var now = new Date().toLocaleString();
+      localStorage.setItem('sw_lb_last_sync', now);
+      var lastSyncEl = document.getElementById('lbLastSyncedText');
+      if (lastSyncEl) lastSyncEl.textContent = 'Last synced: ' + now;
+      if (!silent) showToast('\u2705 Leaderboard synced to cloud!');
+    } catch (e) {
+      if (!silent) {
+        showToast('\u274C Sync failed — your data is safe locally. (' + (e.code || e.message) + ')');
+        window._swShowOfflineBanner('Sync failed. Your leaderboard is saved locally and will sync next time the cloud is reachable.');
+      }
+      console.error('[StreamWheel] LB sync error:', e);
+    } finally {
+      if (!silent && btn) { btn.disabled = false; btn.textContent = '\u2601\uFE0F Sync to Cloud'; }
+    }
   };
 
-  window.swlShowRegister = function () {
-    showToast('\uD83D\uDCDD Registration coming soon!');
-  };
+  // ── Legacy alias (swlShowRegister was called by old "Create one free" link) ──
+  window.swlShowRegister = function() { window.swlSwitchAuthTab('register'); window.swlScrollToLogin(); };
 
-  window.swlShowForgot = function () {
-    showToast('\uD83D\uDCE7 Password reset coming soon!');
-  };
+  // ── Auto-sync on page close / refresh (premium only) ──
+  window.addEventListener('beforeunload', function() {
+    var user = window._swCurrentUser;
+    if (user && user.isPremium) {
+      window.swSyncLeaderboardToCloud(true);
+    }
+  });
 
   window.swlOpenModal = function (id) {
     var el = document.getElementById(id);
