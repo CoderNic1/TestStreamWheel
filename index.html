@@ -1343,7 +1343,7 @@ body {
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyC9ntqMcWAeW1e0UMafiFv59Ez4GnyWwjA",
+    apiKey: "AIzaSyDPLACEHOLDER_REPLACE_WITH_REAL_KEY",
     authDomain: "streamwheel-a9b07.firebaseapp.com",
     projectId: "streamwheel-a9b07",
     storageBucket: "streamwheel-a9b07.firebasestorage.app",
@@ -2059,18 +2059,60 @@ body {
         <button type="button" class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="persistAndApplyGameSidebarUi(true)">💾 Save layout</button>
       </div>
 
-      <!-- Session -->
+      <!-- Session & Account -->
       <div class="panel" style="margin-bottom:16px">
-        <div class="panel-title">🚪 Session</div>
-        <!-- Firebase auth status -->
+        <div class="panel-title">🚪 Session &amp; Account</div>
+
+        <!-- Auth status badge -->
         <div class="fb-status-bar" id="settingsAuthStatus">
           <div class="fb-dot"></div>
           <span id="settingsAuthText">Not signed in</span>
         </div>
-        <p style="font-size:0.8rem;color:var(--text2);font-weight:600;margin-bottom:10px">Return to the welcome screen. Data stays in this browser until you clear site data.</p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button type="button" class="btn btn-secondary btn-sm" onclick="swlLogoutToLanding()">Log out</button>
-          <button type="button" class="btn btn-danger btn-sm" id="settingsFirebaseSignOutBtn" style="display:none" onclick="swFirebaseSignOut()">🔓 Sign out of Cloud</button>
+
+        <!-- Stream mode toggle -->
+        <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;margin-bottom:12px;cursor:pointer" onclick="swToggleStreamMode()" id="streamModeRow">
+          <div>
+            <div style="font-weight:800;font-size:0.82rem;color:var(--text)">🎥 Stream Mode</div>
+            <div style="font-size:0.72rem;font-weight:600;color:var(--text2);margin-top:1px">Hides username &amp; account details while you&apos;re live</div>
+          </div>
+          <div id="streamModeToggle" style="width:38px;height:22px;border-radius:11px;background:var(--border);position:relative;transition:background 0.2s;flex-shrink:0">
+            <div id="streamModeThumb" style="position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>
+          </div>
+        </div>
+
+        <!-- Account info (hidden in stream mode) -->
+        <div id="accountInfoBlock">
+          <div style="font-size:0.75rem;font-weight:700;color:var(--text2);margin-bottom:8px">Return to the welcome screen. Your data stays in this browser until you clear site data.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="swlLogoutToLanding()">Log out</button>
+            <button type="button" class="btn btn-danger btn-sm" id="settingsFirebaseSignOutBtn" style="display:none" onclick="swFirebaseSignOut()">🔓 Sign out of Cloud</button>
+          </div>
+
+          <!-- Change password (only shown when signed in) -->
+          <div id="changePasswordSection" style="display:none;border-top:1px dashed var(--border);padding-top:10px">
+            <div style="font-size:0.8rem;font-weight:800;color:var(--text);margin-bottom:8px">🔑 Change Password</div>
+            <div class="form-group" style="margin-bottom:8px">
+              <label class="form-label">Current password</label>
+              <div style="position:relative">
+                <input type="password" class="form-input" id="cpCurrentPw" placeholder="••••••••" style="padding-right:38px">
+                <button type="button" onclick="swlTogglePw('cpCurrentPw',this)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:0.9rem;color:var(--text2)">👁</button>
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom:8px">
+              <label class="form-label">New password <span style="font-weight:500;font-size:0.68rem">(min 8 chars)</span></label>
+              <div style="position:relative">
+                <input type="password" class="form-input" id="cpNewPw" placeholder="••••••••" style="padding-right:38px" oninput="swlCheckPwStrength(this.value,'cpPwBar','cpPwLabel')">
+                <button type="button" onclick="swlTogglePw('cpNewPw',this)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:0.9rem;color:var(--text2)">👁</button>
+              </div>
+              <div style="height:4px;border-radius:4px;margin-top:5px;background:var(--border);overflow:hidden"><div id="cpPwBar" style="height:100%;width:0;transition:width 0.3s,background 0.3s;border-radius:4px"></div></div>
+              <div id="cpPwLabel" style="font-size:0.68rem;font-weight:800;margin-top:2px;color:var(--text3)"></div>
+            </div>
+            <div class="form-group" style="margin-bottom:10px">
+              <label class="form-label">Confirm new password</label>
+              <input type="password" class="form-input" id="cpConfirmPw" placeholder="••••••••">
+            </div>
+            <button type="button" class="btn btn-primary btn-sm" onclick="swChangePassword()">🔑 Update Password</button>
+          </div>
         </div>
       </div>
     </div>
@@ -4456,10 +4498,12 @@ function escHtml(s) {
     return ok;
   };
 
-  // ── Password strength meter ──
-  window.swlCheckPwStrength = function(pw) {
-    var bar = document.getElementById('regPwStrengthBar');
-    var label = document.getElementById('regPwStrengthLabel');
+  // ── Password strength meter (shared by register + change-password) ──
+  window.swlCheckPwStrength = function(pw, barId, labelId) {
+    barId = barId || 'regPwStrengthBar';
+    labelId = labelId || 'regPwStrengthLabel';
+    var bar = document.getElementById(barId);
+    var label = document.getElementById(labelId);
     if (!bar || !label) return;
     var score = 0;
     if (pw.length >= 8) score++;
@@ -4477,6 +4521,66 @@ function escHtml(s) {
     ];
     var lvl = levels[Math.min(score, 5)];
     bar.style.width = lvl.w; bar.style.background = lvl.c; label.textContent = lvl.l;
+  };
+
+  // ── Change password ──
+  window.swChangePassword = async function() {
+    var currentPw  = (document.getElementById('cpCurrentPw') || {}).value || '';
+    var newPw      = (document.getElementById('cpNewPw') || {}).value || '';
+    var confirmPw  = (document.getElementById('cpConfirmPw') || {}).value || '';
+    if (!currentPw || !newPw || !confirmPw) { showToast('\u26A0\uFE0F Fill in all three password fields'); return; }
+    if (newPw.length < 8) { showToast('\u26A0\uFE0F New password must be at least 8 characters'); return; }
+    if (newPw !== confirmPw) { showToast('\u26A0\uFE0F New passwords do not match'); return; }
+    if (newPw === currentPw) { showToast('\u26A0\uFE0F New password must be different from current'); return; }
+    var fb = _fb();
+    var user = fb && fb.auth.currentUser;
+    var swUser = window._swCurrentUser;
+    if (!user || !swUser) { showToast('\u26A0\uFE0F Not signed in'); return; }
+    try {
+      showToast('\uD83D\uDD04 Updating password\u2026');
+      // Re-authenticate first (Firebase requires this for sensitive operations)
+      var username = swUser.username || localStorage.getItem('sw_username') || '';
+      var credential = fb.EmailAuthProvider.credential(_usernameToEmail(username), currentPw);
+      await fb.reauthenticateWithCredential(user, credential);
+      // Now update the password
+      var { updatePassword } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+      await updatePassword(user, newPw);
+      // Clear the fields
+      ['cpCurrentPw','cpNewPw','cpConfirmPw'].forEach(function(id) {
+        var el = document.getElementById(id); if (el) el.value = '';
+      });
+      var bar = document.getElementById('cpPwBar'); if (bar) bar.style.width = '0';
+      var lbl = document.getElementById('cpPwLabel'); if (lbl) lbl.textContent = '';
+      showToast('\u2705 Password updated successfully!');
+    } catch(err) {
+      var code = err.code || '';
+      var msg = (code === 'auth/wrong-password' || code === 'auth/invalid-credential')
+        ? '\u274C Current password is incorrect'
+        : code === 'auth/too-many-requests'
+        ? '\u274C Too many attempts \u2014 please wait a moment'
+        : code === 'auth/weak-password'
+        ? '\u274C New password is too weak'
+        : '\u274C Failed: ' + code;
+      showToast(msg);
+    }
+  };
+
+  // ── Stream mode: hides account info block while live ──
+  window.swApplyStreamMode = function() {
+    var on = localStorage.getItem('sw_stream_mode') === '1';
+    var block = document.getElementById('accountInfoBlock');
+    var toggle = document.getElementById('streamModeToggle');
+    var thumb = document.getElementById('streamModeThumb');
+    if (block) block.style.display = on ? 'none' : '';
+    if (toggle) toggle.style.background = on ? 'var(--accent3)' : 'var(--border)';
+    if (thumb) thumb.style.left = on ? '19px' : '3px';
+  };
+
+  window.swToggleStreamMode = function() {
+    var on = localStorage.getItem('sw_stream_mode') === '1';
+    localStorage.setItem('sw_stream_mode', on ? '0' : '1');
+    swApplyStreamMode();
+    showToast(on ? '\uD83D\uDC41 Stream mode off \u2014 account details visible' : '\uD83C\uDFA5 Stream mode on \u2014 account details hidden');
   };
 
   // ── SIGN IN with username ──
@@ -4616,19 +4720,21 @@ function escHtml(s) {
     var statusText = document.getElementById('settingsAuthText');
     var signOutBtn = document.getElementById('settingsFirebaseSignOutBtn');
     var deleteSection = document.getElementById('deleteAccountSection');
+    var changePwSection = document.getElementById('changePasswordSection');
     if (statusBar && statusText) {
       if (user) {
         statusBar.classList.add('show');
         statusBar.classList.toggle('vip', isPremium);
         statusText.textContent = isPremium
-          ? '\u2B50 Premium — @' + username
-          : '\u2705 Signed in — @' + username;
+          ? '\u2B50 Premium \u2014 @' + username
+          : '\u2705 Signed in \u2014 @' + username;
       } else {
         statusBar.classList.remove('show');
       }
     }
     if (signOutBtn) signOutBtn.style.display = user ? 'inline-flex' : 'none';
     if (deleteSection) deleteSection.style.display = user ? 'block' : 'none';
+    if (changePwSection) changePwSection.style.display = user ? 'block' : 'none';
 
     // Leaderboard sync button + cloud status bar
     var syncBtn = document.getElementById('lbSyncBtn');
@@ -4636,7 +4742,10 @@ function escHtml(s) {
     var cloudText = document.getElementById('lbCloudStatusText');
     if (syncBtn) syncBtn.style.display = isPremium ? 'flex' : 'none';
     if (cloudBar) cloudBar.classList.toggle('show', !!isPremium);
-    if (cloudText && isPremium) cloudText.textContent = '\u2601\uFE0F Cloud Leaderboard — Premium Active (' + username + ')';
+    if (cloudText && isPremium) cloudText.textContent = '\u2601\uFE0F Cloud Leaderboard \u2014 Premium Active (' + username + ')';
+
+    // Apply stream mode on load
+    swApplyStreamMode();
   };
 
   // ── Load leaderboard from Firestore → localStorage, with timestamp safety ──
