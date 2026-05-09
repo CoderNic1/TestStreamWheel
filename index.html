@@ -1367,7 +1367,7 @@ body {
 
   // ── Auth state observer ──
   // Session guard — only allow cloud writes/loads after explicit login in this session
-  let _swExplicitLoginDone = false;
+  window.window._swExplicitLoginDone = false;
 
   onAuthStateChanged(auth, async (user) => {
     if (user) {
@@ -1379,7 +1379,7 @@ body {
         const cloudLastLogin = data.lastLogin ? data.lastLogin.toMillis() : 0;
         window._swCurrentUser = { uid: user.uid, username, isPremium, cloudLastLogin };
         // Only write lastLogin and load LB after an explicit login this session
-        if (_swExplicitLoginDone) {
+        if (window._swExplicitLoginDone) {
           await setDoc(doc(db, 'hosts', user.uid), { lastLogin: serverTimestamp() }, { merge: true });
           if (isPremium) {
             await window._swLoadLeaderboardFromCloud(cloudLastLogin);
@@ -4598,7 +4598,7 @@ function escHtml(s) {
     if (!fb) { showToast('\u26A0\uFE0F Still loading — please wait a moment'); return; }
     try {
       showToast('\uD83D\uDD04 Signing in\u2026');
-      _swExplicitLoginDone = true;
+      window._swExplicitLoginDone = true;
       await fb.signInWithEmailAndPassword(fb.auth, _usernameToEmail(username), pass);
       localStorage.setItem('sw_username', username);
       showToast('\u2705 Welcome back, ' + username + '!');
@@ -4630,7 +4630,7 @@ function escHtml(s) {
     if (!fb) { showToast('\u26A0\uFE0F Still loading — please wait a moment'); return; }
     try {
       showToast('\uD83D\uDD04 Creating account\u2026');
-      _swExplicitLoginDone = true;
+      window._swExplicitLoginDone = true;
       var cred = await fb.createUserWithEmailAndPassword(fb.auth, _usernameToEmail(username), pass);
       await fb.setDoc(fb.doc(fb.db, 'hosts', cred.user.uid), {
         username: username,
@@ -4671,7 +4671,7 @@ function escHtml(s) {
     var btn = document.getElementById('recoveryActionBtn');
     if (btn) { btn.disabled = true; btn.textContent = '\uD83D\uDD04 Checking\u2026'; }
     try {
-      _swExplicitLoginDone = true;
+      window._swExplicitLoginDone = true;
       var tempCred = await fb.signInWithEmailAndPassword(fb.auth, _usernameToEmail(username), code);
       // Read Firestore to check if this is a valid unexpired recovery code
       var hostSnap = await fb.getDoc(fb.doc(fb.db, 'hosts', tempCred.user.uid));
@@ -4708,7 +4708,7 @@ function escHtml(s) {
       }
       showToast('\u2705 Code verified! Set your new password below.');
     } catch(e) {
-      _swExplicitLoginDone = false; // reset on failure
+      window._swExplicitLoginDone = false; // reset on failure
       var errCode = (e.code || '');
       var msg = (errCode === 'auth/invalid-credential' || errCode === 'auth/wrong-password' || errCode === 'auth/user-not-found')
         ? '\u274C Code is incorrect or has expired \u2014 contact your admin'
