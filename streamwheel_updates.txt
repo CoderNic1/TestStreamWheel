@@ -4,6 +4,29 @@
 // * dot 
 // ++ new line ++
 
+++ new line ++
+
+# 🛜 V1.3 - **Login system and database connection!**
+
+** login system **
+* Create an account using your xsee username and a password, in future connection with Xsee would be needed
+* login using your username and password
+* UI changes to reflect active premium subscription
+* option to reset your password
+* option to fully delete your account and saved data on database
+
+** Leaderboard save - premium **
+* integrate premium leaderboard saving on database
+* fall-back system to keep local when no connection possible with database
+* leaderboard can be deleted
+* 1 leaderboard per account
+
+**Next plans**
+* Integrate full premium system (lock features behind premium
+* integrate Xsee API once available
+* beta testing and collecting feedback
+* security checks
+* if needed bug fixes and patches.
 
 ++ new line ++
 
@@ -14,8 +37,8 @@ date: 01/05/2026
 ** New features**
 
 * Pre-fill the list of entries with 10 funny NPC names
-* Add **autocycle** feature, this system is provided to let the game run without any further input from the streamer needed, set amount of rounds and time per round and the system runs for you. (further tweaks/evaluation is taking place).
-* add cycle log wich gives information about your post cycles
+* Add **autocycle** feature this system is provided to let the game run without any further input from the streamer needed set amount of rounds and time per round and the system runs for you. (further tweaks/evaluation is taking place).
+* add cycle log wich gives information about your past cycles
 * add custom wheel logo option, upload your logo and show it on the wheel while streaming, possible fixes/changes needed for how big
 * add 4-step based tutorial
 * status save, if you now refresh the page by accident it will go back to your last saved status, after closing the tab its reset (autosaves)
@@ -23,7 +46,7 @@ date: 01/05/2026
 ** Changes **
 
 * Instead of the option to upload only 1 music file you can now upload multiple and manage the playlist
-* removed the ad api fetch system, there is no usecase to support external ad support, local ad system stays available and free to use
+* removed the ad api fetch system, there is no usecase to support external ad support local ad system stays available and free to use
 * removed the custom database key function, future database will be stored by ourself. (premium function)
 
 ** Bug fixes **

@@ -1483,42 +1483,6 @@ body {
         Forgot your password?
         <a href="https://discord.gg/DhDzyC94mV" target="_blank" rel="noopener noreferrer" id="swForgotDiscordLink">Open a support ticket on Discord →</a>
         &nbsp;·&nbsp;
-        <a href="#" onclick="swlSwitchAuthTab('recovery');return false;">Have a recovery code?</a>
-      </div>
-    </div>
-
-    <!-- ── RECOVERY CODE PANEL ── -->
-    <div id="swPanelRecovery" style="display:none">
-      <div class="login-title" style="font-size:1.5rem;margin-bottom:4px">🔑 Recovery Code</div>
-      <div class="login-sub">Enter the code your admin sent you to set a new password</div>
-      <div class="form-field">
-        <label>👤 Username</label>
-        <input type="text" id="recoveryUsername" placeholder="your_username" autocomplete="username" />
-      </div>
-      <div class="form-field">
-        <label>🔑 Recovery Code</label>
-        <input type="text" id="recoveryCodeInput" placeholder="e.g. AB3X7YZ2" autocomplete="off"
-          style="letter-spacing:3px;font-weight:800;text-transform:uppercase"
-          oninput="this.value=this.value.toUpperCase()" />
-      </div>
-      <div id="recoveryNewPwField" style="display:none">
-        <div class="form-field">
-          <label>🔒 New Password <span style="font-weight:500;font-size:0.75rem;color:var(--text3)">(min 8 chars)</span></label>
-          <div style="position:relative">
-            <input type="password" id="recoveryNewPw" placeholder="••••••••" style="padding-right:42px"
-              oninput="swlCheckPwStrength(this.value,'recoveryPwBar','recoveryPwLabel')" />
-            <button type="button" onclick="swlTogglePw('recoveryNewPw',this)"
-              style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;color:var(--text2)">👁</button>
-          </div>
-          <div style="height:4px;border-radius:4px;margin-top:5px;background:var(--border);overflow:hidden">
-            <div id="recoveryPwBar" style="height:100%;width:0;transition:width 0.3s,background 0.3s;border-radius:4px"></div>
-          </div>
-          <div id="recoveryPwLabel" style="font-size:0.7rem;font-weight:800;margin-top:3px;color:var(--text3)"></div>
-        </div>
-      </div>
-      <button type="button" class="btn-login" id="recoveryActionBtn" onclick="swlVerifyRecoveryCode()">Verify Code →</button>
-      <div class="login-footer-text" style="margin-top:12px">
-        <a href="#" onclick="swlSwitchAuthTab('signin');return false;">← Back to Sign In</a>
       </div>
     </div>
 
@@ -1554,8 +1518,20 @@ body {
 
       <button type="button" class="btn-login" onclick="swlRegisterUser()">Create Account →</button>
 
-      <div class="login-footer-text" style="margin-top:12px;font-size:0.74rem">
-        By creating an account you agree that no sensitive personal data is stored — only your username and a securely hashed password.
+      <!-- Xsee signup button -->
+      <button type="button" class="btn btn-secondary" onclick="swlOpenModal('xseeSignupModal')"
+        style="width:100%;margin-top:10px;justify-content:center;font-size:0.82rem;padding:10px">
+        📡 Don't have an Xsee account yet?
+      </button>
+
+      <!-- Password recovery warning -->
+      <div style="display:flex;align-items:flex-start;gap:8px;background:rgba(255,140,0,0.08);border:1.5px solid rgba(255,140,0,0.3);border-radius:10px;padding:10px 12px;margin-top:12px;font-size:0.74rem;font-weight:700;color:var(--text2);line-height:1.55">
+        <span style="flex-shrink:0;font-size:1rem">⚠️</span>
+        <span>Recovering a lost password is currently not possible due to our current use of the privacy policy and the choice to not collect any direct personal information. If you lose access to your account, contact us on <a href="https://discord.gg/DhDzyC94mV" target="_blank" rel="noopener noreferrer" style="color:var(--accent6)">Discord</a> and we'll help you create a new one.</span>
+      </div>
+
+      <div class="login-footer-text" style="margin-top:10px;font-size:0.74rem">
+        By creating an account you agree that no sensitive personal data is stored — only your username and a password, we recommend to not use a commonly used password from other services.
       </div>
     </div>
 
@@ -1573,6 +1549,61 @@ body {
   </div>
   <div>© 2026 StreamWheel</div>
 </footer>
+
+<!-- ===== XSEE SIGNUP MODAL ===== -->
+<div class="swl-modal-backdrop" id="xseeSignupModal" style="z-index:9998">
+  <div class="swl-modal-box" style="max-width:480px">
+    <div class="swl-modal-header">
+      <div class="swl-modal-title">📡 Join Xsee</div>
+      <button type="button" class="swl-modal-close-btn" onclick="swlCloseModal('xseeSignupModal')">✕</button>
+    </div>
+    <div class="swl-modal-body">
+      <div style="font-size:0.82rem;font-weight:700;color:var(--text2);line-height:1.7;margin-bottom:18px">
+        Xsee is the streaming platform StreamWheel is built for. We are not responsible for any actions taken by Xsee, read there terms of use and privacy policy. By signing up with the link below you use our referral code and can enjoy extra benefits in our discord server. If you need to enter the code you can use <strong>CD292248</strong> to enter. Create your free account in a few steps:
+      </div>
+
+      <!-- Step by step -->
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--accent6);color:#fff;font-weight:900;font-size:0.82rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+          <div>
+            <div style="font-weight:800;font-size:0.84rem;color:var(--text)">Go to Xsee.tv</div>
+            <div style="font-size:0.76rem;color:var(--text2);margin-top:2px">Click the sign up button in the top right corner</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--accent6);color:#fff;font-weight:900;font-size:0.82rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+          <div>
+            <div style="font-weight:800;font-size:0.84rem;color:var(--text)">Choose your username</div>
+            <div style="font-size:0.76rem;color:var(--text2);margin-top:2px">Pick the same username you'll use for StreamWheel so your identity stays consistent and is easy to remember or when you need support.</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--accent6);color:#fff;font-weight:900;font-size:0.82rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+          <div>
+            <div style="font-weight:800;font-size:0.84rem;color:var(--text)">Sign up with an email and password</div>
+            <div style="font-size:0.76rem;color:var(--text2);margin-top:2px">Xsee uses standard email registration — use a real email so you can recover your Xsee account if needed</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--accent6);color:#fff;font-weight:900;font-size:0.82rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
+          <div>
+            <div style="font-weight:800;font-size:0.84rem;color:var(--text)">Come back and create your StreamWheel account</div>
+            <div style="font-size:0.76rem;color:var(--text2);margin-top:2px">Use the same username you picked on Xsee wich makes it easier to remember or when you need support.</div>
+          </div>
+        </div>
+      </div>
+
+      <a href="https://xsee.tv/?ref=CD292248" target="_blank" rel="noopener noreferrer"
+        style="display:flex;align-items:center;justify-content:center;gap:8px;background:var(--accent6);color:#fff;border-radius:var(--radius-sm);padding:12px 20px;font-family:var(--font-body);font-weight:800;font-size:0.9rem;text-decoration:none;transition:opacity 0.2s"
+        onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+        📡 Sign up on Xsee.tv →
+      </a>
+      <div style="font-size:0.68rem;color:var(--text3);text-align:center;margin-top:8px;font-weight:600">
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ===== UPDATE LOG MODAL ===== -->
 <div class="swl-modal-backdrop" id="updateLogModal">
@@ -4508,17 +4539,6 @@ function escHtml(s) {
   window.swlSwitchAuthTab = function(tab) {
     document.getElementById('swPanelSignin').style.display = tab === 'signin' ? '' : 'none';
     document.getElementById('swPanelRegister').style.display = tab === 'register' ? '' : 'none';
-    var rec = document.getElementById('swPanelRecovery');
-    if (rec) rec.style.display = tab === 'recovery' ? '' : 'none';
-    document.getElementById('swTabSignin').classList.toggle('active', tab === 'signin');
-    document.getElementById('swTabRegister').classList.toggle('active', tab === 'register');
-    // Reset recovery state when switching away
-    if (tab !== 'recovery') {
-      var rpf = document.getElementById('recoveryNewPwField');
-      var rab = document.getElementById('recoveryActionBtn');
-      if (rpf) rpf.style.display = 'none';
-      if (rab) { rab.textContent = 'Verify Code \u2192'; rab.onclick = swlVerifyRecoveryCode; }
-    }
     var discordLink = document.getElementById('swForgotDiscordLink');
     if (discordLink && SWL_CONFIG.discordUrl) discordLink.href = SWL_CONFIG.discordUrl;
   };
@@ -4703,103 +4723,6 @@ function escHtml(s) {
     var url = SWL_CONFIG.discordUrl || 'https://discord.gg/DhDzyC94mV';
     showToast('\uD83D\uDCAC Opening Discord support\u2026');
     window.open(url, '_blank', 'noopener,noreferrer');
-  };
-
-  // ── Recovery code verification ──
-  window.swlVerifyRecoveryCode = async function() {
-    var username = ((document.getElementById('recoveryUsername') || {}).value || '').trim().toLowerCase();
-    var code = ((document.getElementById('recoveryCodeInput') || {}).value || '').trim().toUpperCase();
-    if (!username || !code) { showToast('\u26A0\uFE0F Enter your username and recovery code'); return; }
-    if (!/^[a-zA-Z0-9_]{3,30}$/.test(username)) { showToast('\u26A0\uFE0F Invalid username format'); return; }
-    var fb = _fb();
-    if (!fb) { showToast('\u26A0\uFE0F Still loading \u2014 please wait'); return; }
-    var btn = document.getElementById('recoveryActionBtn');
-    if (btn) { btn.disabled = true; btn.textContent = '\uD83D\uDD04 Checking\u2026'; }
-    try {
-      window._swExplicitLoginDone = true;
-      var tempCred = await fb.signInWithEmailAndPassword(fb.auth, _usernameToEmail(username), code);
-      // Read Firestore to check if this is a valid unexpired recovery code
-      var hostSnap = await fb.getDoc(fb.doc(fb.db, 'hosts', tempCred.user.uid));
-      var hostData = hostSnap.exists() ? hostSnap.data() : {};
-      var storedCode = (hostData.recoveryCode || '').toString().toUpperCase();
-      var expiry = hostData.recoveryExpiry ? new Date(hostData.recoveryExpiry) : null;
-      var isValidRecovery = storedCode.length > 0 && code === storedCode && expiry && expiry > new Date();
-
-      if (!isValidRecovery) {
-        // Not a recovery code — treat as normal login
-        localStorage.setItem('sw_username', hostData.username || username);
-        window._swCurrentUser = {
-          uid: tempCred.user.uid,
-          username: hostData.username || username,
-          isPremium: hostData.isPremium === true,
-          cloudLastLogin: hostData.lastLogin ? hostData.lastLogin.toMillis() : 0
-        };
-        window._swUpdateAuthUI();
-        if (btn) { btn.disabled = false; btn.textContent = 'Verify Code \u2192'; }
-        showToast('\u2705 Signed in! Change your password in Settings \u2192 Account.');
-        setTimeout(swlEnterApp, 900);
-        return;
-      }
-
-      // Valid recovery code — show new password form
-      var rpf = document.getElementById('recoveryNewPwField');
-      if (rpf) rpf.style.display = '';
-      window._swRecoveryUser = tempCred.user;
-      window._swRecoveryHostData = hostData;
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent = 'Set New Password \u2192';
-        btn.onclick = swlSetRecoveryPassword;
-      }
-      showToast('\u2705 Code verified! Set your new password below.');
-    } catch(e) {
-      window._swExplicitLoginDone = false; // reset on failure
-      var errCode = (e.code || '');
-      var msg = (errCode === 'auth/invalid-credential' || errCode === 'auth/wrong-password' || errCode === 'auth/user-not-found')
-        ? '\u274C Code is incorrect or has expired \u2014 contact your admin'
-        : errCode === 'auth/too-many-requests'
-        ? '\u274C Too many attempts \u2014 please wait'
-        : '\u274C Verification failed (' + errCode + ')';
-      showToast(msg);
-      if (btn) { btn.disabled = false; btn.textContent = 'Verify Code \u2192'; }
-    }
-  };
-
-  window.swlSetRecoveryPassword = async function() {
-    var newPw = ((document.getElementById('recoveryNewPw') || {}).value || '');
-    if (newPw.length < 8) { showToast('\u26A0\uFE0F Password must be at least 8 characters'); return; }
-    var firebaseUser = window._swRecoveryUser;
-    var hostData = window._swRecoveryHostData;
-    if (!firebaseUser) { showToast('\u26A0\uFE0F Session expired \u2014 please start over'); swlSwitchAuthTab('recovery'); return; }
-    var fb = _fb();
-    if (!fb) return;
-    var btn = document.getElementById('recoveryActionBtn');
-    if (btn) { btn.disabled = true; btn.textContent = '\uD83D\uDD04 Saving\u2026'; }
-    try {
-      await fb.updatePassword(firebaseUser, newPw);
-      // Wipe the recovery code — cannot be reused
-      await fb.setDoc(fb.doc(fb.db, 'hosts', firebaseUser.uid), {
-        recoveryCode: '',
-        recoveryExpiry: '',
-        lastLogin: fb.serverTimestamp()
-      }, { merge: true });
-      var username = (hostData && hostData.username) || '';
-      localStorage.setItem('sw_username', username);
-      window._swCurrentUser = {
-        uid: firebaseUser.uid,
-        username: username,
-        isPremium: !!(hostData && hostData.isPremium),
-        cloudLastLogin: 0
-      };
-      window._swRecoveryUser = null;
-      window._swRecoveryHostData = null;
-      window._swUpdateAuthUI();
-      showToast('\u2705 Password updated! You are now signed in.');
-      setTimeout(swlEnterApp, 900);
-    } catch(e) {
-      showToast('\u274C Failed to set password: ' + (e.message || e.code));
-      if (btn) { btn.disabled = false; btn.textContent = 'Set New Password \u2192'; }
-    }
   };
 
   // ── Offline / fallback banner ──
