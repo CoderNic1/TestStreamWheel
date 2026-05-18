@@ -3880,7 +3880,7 @@ function clearLeaderboard() {
   renderLeaderboard(); updateLbPreview();
   // Auto-sync to cloud if premium (treat clearing as a write event)
   if (window._swCurrentUser && window._swCurrentUser.isPremium) {
-    window.swSyncLeaderboardToCloud(true);
+    window.swSyncLeaderboardToCloud(true, true);
   }
   showToast('\uD83D\uDDD1\uFE0F Leaderboard cleared!');
 }
@@ -4061,7 +4061,7 @@ function exportLogCSV() {
 function clearAllData() {
   if (!confirm('⚠️ Delete ALL data (log, leaderboard, settings, theme)? Cannot be undone.')) return;
   if (!confirm('🚨 Last chance — confirm full reset?')) return;
-  ['sw_log','sw_lb','sw_lbconfig','sw_ad','sw_theme','sw_wheel','sw_music_vol','sw_elim_autospin_sec','sw_ui_show_winners','sw_ui_show_eliminated','sw_ui_show_lb_preview','sw_wheel_logo','sw_chat_cmd','sw_xsee_link','sw_xsee_host','sw_xsee_auto_fetch','sw_xsee_auto_announce','sw_xsee_announce_elim','sw_xsee_announce_tpl','sw_cycle_log','sw_confetti_enabled','sw_confetti_intensity','sw_first_setup_done','sw_center_size'].forEach(k => localStorage.removeItem(k));
+  ['sw_log','sw_lb','sw_lbconfig','sw_ad','sw_theme','sw_wheel','sw_music_vol','sw_elim_autospin_sec','sw_ui_show_winners','sw_ui_show_eliminated','sw_ui_show_lb_preview','sw_wheel_logo','sw_chat_cmd','sw_xsee_link','sw_xsee_host','sw_xsee_auto_fetch','sw_xsee_auto_announce','sw_xsee_announce_elim','sw_xsee_announce_tpl','sw_lb_last_push_at','sw_cycle_log','sw_confetti_enabled','sw_confetti_intensity','sw_first_setup_done','sw_center_size'].forEach(k => localStorage.removeItem(k));
   sessionStorage.removeItem(SESSION_KEY);
   gameLog=[]; leaderboard=[]; cycleLog=[];
   lbConfig = { ...LB_CONFIG_DEFAULTS, prizes: LB_CONFIG_DEFAULTS.prizes.map(p => ({ ...p })) };
@@ -5298,11 +5298,28 @@ function escHtml(s) {
     }
   };
 
-  // ── Push leaderboard to Firestore (premium only) ──
-  window.swSyncLeaderboardToCloud = async function(silent) {
+  // ── Push leaderboard to Firestore (premium only, min 5 min between pushes) ──
+  var SW_LB_PUSH_COOLDOWN_MS = 5 * 60 * 1000;
+
+  window.swLbPushCooldownRemainingMs = function() {
+    var last = localStorage.getItem('sw_lb_last_push_at');
+    if (!last) return 0;
+    var elapsed = Date.now() - new Date(last).getTime();
+    return Math.max(0, SW_LB_PUSH_COOLDOWN_MS - elapsed);
+  };
+
+  window.swSyncLeaderboardToCloud = async function(silent, force) {
     var user = window._swCurrentUser;
     if (!user || !user.isPremium) {
       if (!silent) showToast('\u26A0\uFE0F Cloud sync requires a Premium account');
+      return;
+    }
+    var remaining = window.swLbPushCooldownRemainingMs();
+    if (!force && remaining > 0) {
+      if (!silent) {
+        var mins = Math.max(1, Math.ceil(remaining / 60000));
+        showToast('\u23F3 Cloud sync again in ~' + mins + ' min (5 min minimum between uploads)');
+      }
       return;
     }
     var fb = _fb();
@@ -5320,6 +5337,7 @@ function escHtml(s) {
       });
       var nowIso = new Date().toISOString();
       localStorage.setItem('sw_lb_last_sync', nowIso);
+      localStorage.setItem('sw_lb_last_push_at', nowIso);
       var lastSyncEl = document.getElementById('lbLastSyncedText');
       if (lastSyncEl) lastSyncEl.textContent = 'Last synced: ' + new Date(nowIso).toLocaleString();
       if (!silent) showToast('\u2705 Leaderboard synced to cloud!');
