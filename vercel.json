@@ -3,7 +3,7 @@
   "buildCommand": null,
   "outputDirectory": ".",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" }
+    { "source": "/api/xsee/:path*", "destination": "/api/xsee-proxy?path=:path*" }
   ],
   "headers": [
     {
