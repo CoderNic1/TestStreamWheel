@@ -1,0 +1,5 @@
+{
+  "name": "streamwheel",
+  "private": true,
+  "description": "StreamWheel giveaway wheel — static site + Xsee API proxy on Vercel"
+}
