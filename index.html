@@ -2268,7 +2268,7 @@ body {
           <span class="toggle-icon">▲</span>
         </button>
         <div class="collapsible-section" id="integrationsSection" style="margin-top:12px">
-          <p style="font-size:0.78rem;font-weight:600;color:var(--text2);margin-bottom:12px">API key stays on Vercel. Configure your Space URL and behavior below.</p>
+          <p style="font-size:0.78rem;font-weight:600;color:var(--text2);margin-bottom:12px">Enter your stream's Xsee Space link to start using the integrations.</p>
 
           <!-- Space URL — free for everyone -->
           <div class="form-group">
@@ -2337,7 +2337,7 @@ body {
             <div style="font-size:0.72rem;font-weight:600;color:var(--text2);margin-top:4px">Saved for when Xsee adds chat-read. Use Fetch for now.</div>
           </div>
           <div style="font-size:0.75rem;font-weight:600;color:var(--text2);line-height:1.55;background:var(--bg2);padding:8px 10px;border-radius:8px;border:1px solid var(--border)">
-            💡 Install your Xsee App on the channel for chat posts. Test on your own live stream first.
+            💡 Currently premium is only manually, open a support ticket on our discord server to get it activated.
           </div>
         </div>
       </div>
@@ -3260,10 +3260,7 @@ async function testXseeConnection() {
     const scopes = (me.key && me.key.scopes) ? me.key.scopes : [];
     const scopeStr = scopes.length ? scopes.join(', ') : '?';
     let extra = '';
-    if (scopes.indexOf('streams:read') === -1) {
-      extra = ' · tip: add streams:read on key for stream status';
-    }
-    setXseeStatus('✅ API OK — ' + (me.app?.name || 'App') + ' · scopes: ' + scopeStr + extra, false);
+    setXseeStatus('✅ API OK — ' + (me.app?.name || 'App'), false);
     showToast('✅ Xsee API connected');
   } catch (e) {
     const hint = e.status === 404 && (e.message || '').includes('route')
