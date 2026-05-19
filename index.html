@@ -2269,34 +2269,62 @@ body {
         </button>
         <div class="collapsible-section" id="integrationsSection" style="margin-top:12px">
           <p style="font-size:0.78rem;font-weight:600;color:var(--text2);margin-bottom:12px">API key stays on Vercel. Configure your Space URL and behavior below.</p>
+
+          <!-- Space URL — free for everyone -->
           <div class="form-group">
             <label class="form-label">🔗 Xsee Space Link</label>
             <input class="form-input" id="xseeSpaceLink" placeholder="https://xsee.tv/yourspace" oninput="saveXseeSpaceLink()" />
             <div style="font-size:0.72rem;font-weight:600;color:var(--text2);margin-top:3px">Channel must be <strong>live</strong> on Xsee when you fetch or post chat.</div>
           </div>
-          <div class="form-group" style="display:flex;flex-direction:column;gap:8px">
+
+          <!-- Auto-fetch — free -->
+          <div class="form-group" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px">
             <label class="lb-toggle-wrap" style="justify-content:flex-start">
               <input type="checkbox" id="xseeAutoFetch" onchange="saveXseeIntegrationSettings()" />
               <span>📡 Auto-fetch participants every 60s</span>
             </label>
-            <label class="lb-toggle-wrap" style="justify-content:flex-start">
-              <input type="checkbox" id="xseeAutoAnnounce" onchange="saveXseeIntegrationSettings()" />
-              <span>💬 Auto-post winner messages to Xsee chat</span>
-            </label>
-            <label class="lb-toggle-wrap" style="justify-content:flex-start">
-              <input type="checkbox" id="xseeAnnounceElim" onchange="saveXseeIntegrationSettings()" />
-              <span>💥 Also announce eliminations</span>
-            </label>
           </div>
-          <div class="form-group">
-            <label class="form-label">📝 Winner chat template</label>
-            <input class="form-input" id="xseeAnnounceTemplate" maxlength="150" placeholder="🎉 {winner} won &quot;{prize}&quot; on StreamWheel!" oninput="onXseeTemplateInput()" />
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3px">
-              <div style="font-size:0.68rem;font-weight:600;color:var(--text2)">Placeholders: {winner} {prize} {remaining}</div>
-              <div id="templateCharCount" style="font-size:0.68rem;font-weight:800;color:var(--text2);flex-shrink:0;margin-left:8px">0 / 150</div>
+
+          <!-- Auto-announce — Premium only -->
+          <div id="xseeAutoAnnouncePremiumNotice" class="sw-premium-notice" style="display:none">
+            <i class="sw-premium-notice-icon" title="Requires Premium">⭐</i>
+            <span>Auto-announce to chat is a <strong>Premium</strong> feature. Subscribe to the <a href="https://xsee.tv/iwatchyou" target="_blank" rel="noopener noreferrer">Iwatchyou channel on Xsee</a> to unlock it.</span>
+          </div>
+          <div id="xseeAutoAnnounceContent">
+            <div class="form-group" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+              <label class="lb-toggle-wrap" style="justify-content:flex-start">
+                <input type="checkbox" id="xseeAutoAnnounce" onchange="saveXseeIntegrationSettings()" />
+                <span>💬 Auto-post winner messages to Xsee chat <span style="font-size:0.7rem;opacity:0.7">⭐ Premium</span></span>
+              </label>
+              <label class="lb-toggle-wrap" style="justify-content:flex-start">
+                <input type="checkbox" id="xseeAnnounceElim" onchange="saveXseeIntegrationSettings()" />
+                <span>💥 Also announce eliminations <span style="font-size:0.7rem;opacity:0.7">⭐ Premium</span></span>
+              </label>
+            </div>
+
+            <!-- Winner template -->
+            <div class="form-group">
+              <label class="form-label">🏆 Winner chat template</label>
+              <input class="form-input" id="xseeAnnounceTemplate" maxlength="150" placeholder="🎉 @{winner} won &quot;{prize}&quot; on StreamWheel!" oninput="onXseeTemplateInput('xseeAnnounceTemplate','templateCharCount')" />
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3px">
+                <div style="font-size:0.68rem;font-weight:600;color:var(--text2)">Placeholders: {winner} {prize} {remaining} — <strong>@</strong> is added automatically</div>
+                <div id="templateCharCount" style="font-size:0.68rem;font-weight:800;color:var(--text2);flex-shrink:0;margin-left:8px">0 / 150</div>
+              </div>
+            </div>
+
+            <!-- Elimination template -->
+            <div class="form-group">
+              <label class="form-label">💥 Elimination chat template</label>
+              <input class="form-input" id="xseeElimTemplate" maxlength="150" placeholder="💥 @{winner} has been eliminated! {remaining} players remaining." oninput="onXseeTemplateInput('xseeElimTemplate','elimTemplateCharCount')" />
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:3px">
+                <div style="font-size:0.68rem;font-weight:600;color:var(--text2)">Placeholders: {winner} {remaining} — <strong>@</strong> is added automatically</div>
+                <div id="elimTemplateCharCount" style="font-size:0.68rem;font-weight:800;color:var(--text2);flex-shrink:0;margin-left:8px">0 / 150</div>
+              </div>
             </div>
           </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <!-- end xseeAutoAnnounceContent -->
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;margin-top:4px">
             <button type="button" class="btn btn-secondary btn-sm" onclick="testXseeConnection()">🔌 Test API</button>
             <button type="button" class="btn btn-secondary btn-sm" onclick="fetchSpaceParticipants(true)">📡 Fetch now</button>
           </div>
@@ -2978,11 +3006,14 @@ function shuffleEntries() {
 // ==========================================
 //  XSEE API (via Vercel proxy /api/xsee/*)
 // ==========================================
-const XSEE_DEFAULT_TEMPLATE = '🎉 {winner} won "{prize}" on StreamWheel! ({remaining} players left)';
+const XSEE_DEFAULT_TEMPLATE      = '🎉 @{winner} won "{prize}" on StreamWheel! ({remaining} players left)';
+const XSEE_DEFAULT_ELIM_TEMPLATE = '💥 @{winner} has been eliminated! {remaining} players remaining.';
+const XSEE_AD_SUFFIX             = ' 🎡 streamwheel.app';
+const XSEE_TEMPLATE_MAX          = 150;
 let _xseeAutoFetchTimer = null;
 let _lastXseeChatContext = null;
 
-// ── Client-side rate limiting (prevents button spam) ──
+// ── Client-side rate limiting ──
 const _apiCooldowns = {};
 function isOnCooldown(key, ms) {
   const last = _apiCooldowns[key] || 0;
@@ -2991,36 +3022,28 @@ function isOnCooldown(key, ms) {
   return false;
 }
 
-// ── Debounce for settings saves (avoids firing syncXseeAutoFetchTimer on every keystroke) ──
+// ── Debounce for settings saves ──
 let _saveXseeSettingsDebounce = null;
 function saveXseeIntegrationSettingsDebounced() {
   clearTimeout(_saveXseeSettingsDebounce);
   _saveXseeSettingsDebounce = setTimeout(saveXseeIntegrationSettings, 400);
 }
 
-// ── Template input handler: enforces 150-char cap + live counter + debounced save ──
-const XSEE_TEMPLATE_MAX = 150;
-function onXseeTemplateInput() {
-  const tpl = document.getElementById('xseeAnnounceTemplate');
-  const counter = document.getElementById('templateCharCount');
-  if (!tpl) return;
-  // Hard-cap (maxlength attr covers most cases, this is a JS safety net)
-  if (tpl.value.length > XSEE_TEMPLATE_MAX) tpl.value = tpl.value.slice(0, XSEE_TEMPLATE_MAX);
-  const len = tpl.value.length;
-  if (counter) {
-    counter.textContent = len + ' / ' + XSEE_TEMPLATE_MAX;
-    counter.style.color = len >= XSEE_TEMPLATE_MAX - 10 ? 'var(--accent1)' : 'var(--text2)';
-  }
-  saveXseeIntegrationSettingsDebounced();
-}
-
-function syncTemplateCharCounter() {
-  const tpl = document.getElementById('xseeAnnounceTemplate');
-  const counter = document.getElementById('templateCharCount');
+// ── Template char counter (shared for win + elim fields) ──
+function syncTemplateCharCounter(inputId, counterId) {
+  const tpl     = document.getElementById(inputId);
+  const counter = document.getElementById(counterId);
   if (!tpl || !counter) return;
   const len = Math.min(tpl.value.length, XSEE_TEMPLATE_MAX);
   counter.textContent = len + ' / ' + XSEE_TEMPLATE_MAX;
   counter.style.color = len >= XSEE_TEMPLATE_MAX - 10 ? 'var(--accent1)' : 'var(--text2)';
+}
+function onXseeTemplateInput(inputId, counterId) {
+  const tpl = document.getElementById(inputId);
+  if (!tpl) return;
+  if (tpl.value.length > XSEE_TEMPLATE_MAX) tpl.value = tpl.value.slice(0, XSEE_TEMPLATE_MAX);
+  syncTemplateCharCounter(inputId, counterId);
+  saveXseeIntegrationSettingsDebounced();
 }
 
 function parseXseeHostUsername(input) {
@@ -3081,36 +3104,61 @@ async function xseeApi(path, options) {
 
 function getXseeIntegrationSettings() {
   return {
-    autoFetch: localStorage.getItem('sw_xsee_auto_fetch') === '1',
-    autoAnnounce: localStorage.getItem('sw_xsee_auto_announce') === '1',
-    announceElim: localStorage.getItem('sw_xsee_announce_elim') === '1',
-    template: localStorage.getItem('sw_xsee_announce_tpl') || XSEE_DEFAULT_TEMPLATE,
+    autoFetch:    localStorage.getItem('sw_xsee_auto_fetch')     === '1',
+    autoAnnounce: localStorage.getItem('sw_xsee_auto_announce')  === '1',
+    announceElim: localStorage.getItem('sw_xsee_announce_elim')  === '1',
+    template:     localStorage.getItem('sw_xsee_announce_tpl')   || XSEE_DEFAULT_TEMPLATE,
+    elimTemplate: localStorage.getItem('sw_xsee_elim_tpl')       || XSEE_DEFAULT_ELIM_TEMPLATE,
   };
 }
 
 function saveXseeIntegrationSettings() {
-  const af = document.getElementById('xseeAutoFetch');
-  const aa = document.getElementById('xseeAutoAnnounce');
-  const ae = document.getElementById('xseeAnnounceElim');
-  const tpl = document.getElementById('xseeAnnounceTemplate');
+  const isPremium = !!(window._swCurrentUser && window._swCurrentUser.isPremium);
+  const af   = document.getElementById('xseeAutoFetch');
+  const aa   = document.getElementById('xseeAutoAnnounce');
+  const ae   = document.getElementById('xseeAnnounceElim');
+  const tpl  = document.getElementById('xseeAnnounceTemplate');
+  const etpl = document.getElementById('xseeElimTemplate');
+
+  // Auto-fetch is free; auto-announce features are premium only
   if (af) localStorage.setItem('sw_xsee_auto_fetch', af.checked ? '1' : '0');
-  if (aa) localStorage.setItem('sw_xsee_auto_announce', aa.checked ? '1' : '0');
-  if (ae) localStorage.setItem('sw_xsee_announce_elim', ae.checked ? '1' : '0');
-  if (tpl) localStorage.setItem('sw_xsee_announce_tpl', (tpl.value.trim() || XSEE_DEFAULT_TEMPLATE).slice(0, XSEE_TEMPLATE_MAX));
+
+  if (aa) {
+    if (!isPremium && aa.checked) {
+      aa.checked = false;
+      showToast('⭐ Auto-announce is a Premium feature');
+    }
+    localStorage.setItem('sw_xsee_auto_announce', aa.checked ? '1' : '0');
+  }
+  if (ae) {
+    if (!isPremium && ae.checked) {
+      ae.checked = false;
+      showToast('⭐ Auto-announce eliminations is a Premium feature');
+    }
+    localStorage.setItem('sw_xsee_announce_elim', ae.checked ? '1' : '0');
+  }
+
+  if (tpl)  localStorage.setItem('sw_xsee_announce_tpl',  (tpl.value.trim()  || XSEE_DEFAULT_TEMPLATE).slice(0, XSEE_TEMPLATE_MAX));
+  if (etpl) localStorage.setItem('sw_xsee_elim_tpl',      (etpl.value.trim() || XSEE_DEFAULT_ELIM_TEMPLATE).slice(0, XSEE_TEMPLATE_MAX));
+
   syncXseeAutoFetchTimer();
+  updateXseeSendChatButton(); // re-evaluate manual button visibility
 }
 
 function loadXseeIntegrationSettings() {
-  const s = getXseeIntegrationSettings();
-  const af = document.getElementById('xseeAutoFetch');
-  const aa = document.getElementById('xseeAutoAnnounce');
-  const ae = document.getElementById('xseeAnnounceElim');
-  const tpl = document.getElementById('xseeAnnounceTemplate');
-  if (af) af.checked = s.autoFetch;
-  if (aa) aa.checked = s.autoAnnounce;
-  if (ae) ae.checked = s.announceElim;
-  if (tpl) tpl.value = s.template;
-  syncTemplateCharCounter();
+  const s    = getXseeIntegrationSettings();
+  const af   = document.getElementById('xseeAutoFetch');
+  const aa   = document.getElementById('xseeAutoAnnounce');
+  const ae   = document.getElementById('xseeAnnounceElim');
+  const tpl  = document.getElementById('xseeAnnounceTemplate');
+  const etpl = document.getElementById('xseeElimTemplate');
+  if (af)   af.checked   = s.autoFetch;
+  if (aa)   aa.checked   = s.autoAnnounce;
+  if (ae)   ae.checked   = s.announceElim;
+  if (tpl)  tpl.value    = s.template;
+  if (etpl) etpl.value   = s.elimTemplate;
+  syncTemplateCharCounter('xseeAnnounceTemplate', 'templateCharCount');
+  syncTemplateCharCounter('xseeElimTemplate',     'elimTemplateCharCount');
   updateXseeSendChatButton();
   syncXseeAutoFetchTimer();
 }
@@ -3167,7 +3215,7 @@ async function fetchSpaceParticipants(fromSettings) {
     if (!fromSettings) showTab('settings');
     return;
   }
-  // Rate-limit manual fetches to once every 8 seconds
+  // Rate-limit manual button presses (auto-fetch timer is already 60s so skip it)
   if (!fromSettings && isOnCooldown('fetchParticipants', 8000)) {
     showToast('⏳ Please wait a moment before fetching again');
     return;
@@ -3227,21 +3275,22 @@ async function testXseeConnection() {
   }
 }
 
-const XSEE_AD_SUFFIX = ' 🎡 streamwheel.app';
-
 function formatXseeChatMessage(ctx) {
-  const s = getXseeIntegrationSettings();
+  const s         = getXseeIntegrationSettings();
   const isPremium = !!(window._swCurrentUser && window._swCurrentUser.isPremium);
-  let msg = (s.template || XSEE_DEFAULT_TEMPLATE)
-    .replace(/\{winner\}/g, ctx.winner || '')
-    .replace(/\{prize\}/g, ctx.prize || '')
+  // Pick win or elim template based on context kind
+  const tpl = ctx.kind === 'elim'
+    ? (s.elimTemplate || XSEE_DEFAULT_ELIM_TEMPLATE)
+    : (s.template     || XSEE_DEFAULT_TEMPLATE);
+  // Prefix winner name(s) with @ for Xsee tagging
+  const winnerTagged = (ctx.winner || '')
+    .split(',').map(n => '@' + n.trim()).join(', ');
+  let msg = tpl
+    .replace(/\{winner\}/g,    winnerTagged)
+    .replace(/\{prize\}/g,     ctx.prize     || '')
     .replace(/\{remaining\}/g, String(ctx.remaining ?? ''));
-  // Non-premium: append branding ad (total capped at Xsee's 500-char limit)
-  if (!isPremium) {
-    msg = (msg + XSEE_AD_SUFFIX).slice(0, 500);
-  } else {
-    msg = msg.slice(0, 500);
-  }
+  // Non-premium: append branding suffix (total capped at Xsee's 500-char limit)
+  msg = isPremium ? msg.slice(0, 500) : (msg + XSEE_AD_SUFFIX).slice(0, 500);
   return msg;
 }
 
@@ -3258,6 +3307,8 @@ async function maybeAnnounceToXsee(ctx) {
   const s = getXseeIntegrationSettings();
   if (!s.autoAnnounce) return;
   if (ctx.kind === 'elim' && !s.announceElim) return;
+  // Auto-announce is premium only
+  if (!(window._swCurrentUser && window._swCurrentUser.isPremium)) return;
   try {
     await postXseeChatMessage(formatXseeChatMessage(ctx));
     showToast('📡 Posted to Xsee chat');
@@ -3274,19 +3325,33 @@ async function maybeAnnounceToXsee(ctx) {
 function updateXseeSendChatButton() {
   const btn = document.getElementById('xseeSendChatBtn');
   if (!btn) return;
-  const hasHost = !!getXseeHostUsername();
-  btn.style.display = hasHost ? 'inline-flex' : 'none';
-  // Reset button state whenever a new result context arrives
-  if (hasHost) {
-    btn.disabled = false;
-    btn.textContent = '📡 Send to Xsee';
-  }
+  const hasHost   = !!getXseeHostUsername();
+  const s         = getXseeIntegrationSettings();
+  const isPremium = !!(window._swCurrentUser && window._swCurrentUser.isPremium);
+  const ctx       = _lastXseeChatContext;
+  const kind      = ctx ? ctx.kind : 'win';
+
+  // Hide if no host configured
+  if (!hasHost) { btn.style.display = 'none'; return; }
+
+  // Hide manual send when auto-announce will (or already did) handle this kind
+  // — auto-announce wins covers kind='win'; announceElim covers kind='elim'
+  const autoCoversWin  = isPremium && s.autoAnnounce;
+  const autoCoversElim = isPremium && s.autoAnnounce && s.announceElim;
+  const autoCovered    = kind === 'elim' ? autoCoversElim : autoCoversWin;
+
+  if (autoCovered) { btn.style.display = 'none'; return; }
+
+  // Show and reset state for new context
+  btn.style.display = 'inline-flex';
+  btn.disabled      = false;
+  btn.textContent   = '📡 Send to Xsee';
 }
 
 async function sendWinnerToXseeChat() {
   const ctx = _lastXseeChatContext;
   if (!ctx) { showToast('⚠️ Nothing to send'); return; }
-  // One-send lock — prevent double-posting from button spam
+  // One-send lock — prevent double-posting
   if (ctx._sent) { showToast('✅ Already sent to Xsee!'); return; }
   const btn = document.getElementById('xseeSendChatBtn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Sending…'; }
@@ -3305,14 +3370,14 @@ async function sendWinnerToXseeChat() {
 
 function syncXseeAutoFetchTimer() {
   if (_xseeAutoFetchTimer) { clearInterval(_xseeAutoFetchTimer); _xseeAutoFetchTimer = null; }
-  // Never start polling before the user is logged in
+  // Never poll before the user is logged in
   if (!window._swCurrentUser) return;
   const s = getXseeIntegrationSettings();
   if (!s.autoFetch || !getXseeHostUsername()) return;
   _xseeAutoFetchTimer = setInterval(() => {
     if (state.gameStarted && state.gameOver) return;
     if (state.gameStarted && !state.countdownTimer && document.getElementById('entriesBox')?.readOnly) return;
-    // Also skip if on the game tab isn't active — no point polling in background
+    // Skip when not on the game tab — saves pointless API calls
     if (!document.getElementById('page-game')?.classList.contains('active')) return;
     fetchSpaceParticipants(true);
   }, 60000);
@@ -4166,7 +4231,7 @@ function exportLogCSV() {
 function clearAllData() {
   if (!confirm('⚠️ Delete ALL data (log, leaderboard, settings, theme)? Cannot be undone.')) return;
   if (!confirm('🚨 Last chance — confirm full reset?')) return;
-  ['sw_log','sw_lb','sw_lbconfig','sw_ad','sw_theme','sw_wheel','sw_music_vol','sw_elim_autospin_sec','sw_ui_show_winners','sw_ui_show_eliminated','sw_ui_show_lb_preview','sw_wheel_logo','sw_chat_cmd','sw_xsee_link','sw_xsee_host','sw_xsee_auto_fetch','sw_xsee_auto_announce','sw_xsee_announce_elim','sw_xsee_announce_tpl','sw_lb_last_push_at','sw_cycle_log','sw_confetti_enabled','sw_confetti_intensity','sw_first_setup_done','sw_center_size'].forEach(k => localStorage.removeItem(k));
+  ['sw_log','sw_lb','sw_lbconfig','sw_ad','sw_theme','sw_wheel','sw_music_vol','sw_elim_autospin_sec','sw_ui_show_winners','sw_ui_show_eliminated','sw_ui_show_lb_preview','sw_wheel_logo','sw_chat_cmd','sw_xsee_link','sw_xsee_host','sw_xsee_auto_fetch','sw_xsee_auto_announce','sw_xsee_announce_elim','sw_xsee_announce_tpl','sw_xsee_elim_tpl','sw_lb_last_push_at','sw_cycle_log','sw_confetti_enabled','sw_confetti_intensity','sw_first_setup_done','sw_center_size'].forEach(k => localStorage.removeItem(k));
   sessionStorage.removeItem(SESSION_KEY);
   gameLog=[]; leaderboard=[]; cycleLog=[];
   lbConfig = { ...LB_CONFIG_DEFAULTS, prizes: LB_CONFIG_DEFAULTS.prizes.map(p => ({ ...p })) };
@@ -5337,8 +5402,9 @@ function escHtml(s) {
     swApplyStreamMode();
     // Apply premium gates
     if (typeof swApplyPremiumGates === 'function') swApplyPremiumGates();
-    // Re-evaluate auto-fetch timer now that auth state is known
+    // Re-evaluate auto-fetch timer and manual send button now that auth state is known
     if (typeof syncXseeAutoFetchTimer === 'function') syncXseeAutoFetchTimer();
+    if (typeof updateXseeSendChatButton === 'function') updateXseeSendChatButton();
   };
 
   // ── Load leaderboard from Firestore → localStorage, with timestamp safety ──
@@ -5346,8 +5412,7 @@ function escHtml(s) {
   window._swLoadLeaderboardFromCloud = async function(cloudLastLoginMs) {
     var user = window._swCurrentUser;
     if (!user || !user.isPremium) return;
-    // Only load once per session — avoids re-fetching on Firebase token refreshes
-    if (_lbCloudLoadedThisSession) return;
+    if (_lbCloudLoadedThisSession) return; // only once per session
     _lbCloudLoadedThisSession = true;
     var fb = _fb();
     if (!fb) return;
@@ -5510,6 +5575,20 @@ function escHtml(s) {
     var adContent = document.getElementById('adBannerContent');
     if (adNotice)  adNotice.style.display  = isPremium ? 'none' : 'flex';
     if (adContent) adContent.classList.toggle('sw-premium-gate', !isPremium);
+
+    // Integrations — auto-announce toggles (auto-fetch is free)
+    var announceNotice  = document.getElementById('xseeAutoAnnouncePremiumNotice');
+    var announceContent = document.getElementById('xseeAutoAnnounceContent');
+    if (announceNotice)  announceNotice.style.display  = isPremium ? 'none' : 'flex';
+    if (announceContent) announceContent.classList.toggle('sw-premium-gate', !isPremium);
+
+    // Force-uncheck auto-announce checkboxes if not premium
+    if (!isPremium) {
+      var aa = document.getElementById('xseeAutoAnnounce');
+      var ae = document.getElementById('xseeAnnounceElim');
+      if (aa && aa.checked) { aa.checked = false; localStorage.setItem('sw_xsee_auto_announce', '0'); }
+      if (ae && ae.checked) { ae.checked = false; localStorage.setItem('sw_xsee_announce_elim', '0'); }
+    }
   };
 
   // ── Auto-sync on page close / refresh (premium only) ──
